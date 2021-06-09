@@ -28,6 +28,22 @@ void RFIDKit::getTagData()
 	receiveReadTagData();
 }
 
+auto RFIDKit::getTagData(std::array<uint8_t, 16> &tag_data) -> bool
+{
+	sendREQA();
+	if (!receiveATQA()) {
+		return false;
+	}
+
+	sendReadRegister8();
+	if (!receiveTagData()) {
+		return false;
+	}
+
+	getData(tag_data);
+	return true;
+}
+
 void RFIDKit::sendREQA()
 {
 	std::array<uint8_t, 2> array {};
