@@ -10,6 +10,8 @@
 
 using tagAvailableCallback = std::function<void()>;
 
+#include "BufferedSerial.h"
+
 namespace leka {
 
 namespace rfid {
@@ -67,7 +69,7 @@ namespace interface {
 		class ISO14443
 		{
 		  public:
-			virtual auto init() -> bool = 0;
+			virtual void init() = 0;
 
 			virtual auto getTagData(std::array<uint8_t, 16> &tag_data) -> bool = 0;
 
