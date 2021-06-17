@@ -43,7 +43,7 @@ void getData(void)
 	if (core_rfid.getTagData(tag_data)) {
 		printarray(tag_data);
 	}
-	core_rfid.init();
+	core_rfid.enableTagDetection();
 }
 
 void onSigio(void)
@@ -65,7 +65,7 @@ void test()
 	HelloWorld hello;
 	hello.start();
 
-	core_rfid.init();	// not necessary
+	core_rfid.enableTagDetection();	  // not necessary
 
 	while (true) {
 		rtos::ThisThread::sleep_for(10ms);
