@@ -43,10 +43,10 @@ void getData(void)
 	if (core_rfid.getTagData(tag_data)) {
 		printarray(tag_data);
 	}
-	core_rfid.enableTagDetection();
+	core_rfid.setReaderForTagDetection();
 }
 
-void onSigio(void)
+void onCallback(void)
 {
 	eventQueue.call(getData);
 }
@@ -65,7 +65,7 @@ void test()
 	HelloWorld hello;
 	hello.start();
 
-	core_rfid.enableTagDetection();	  // not necessary
+	core_rfid.setReaderForTagDetection();	// not necessary
 
 	while (true) {
 		rtos::ThisThread::sleep_for(10ms);
@@ -79,7 +79,7 @@ auto main() -> int
 
 	thread1.start(test);
 	thread2.start(mbed::callback(&eventQueue, &EventQueue::dispatch_forever));
-	core_rfid.setInterrupt(onSigio);
+	core_rfid.setInterrupt(onCallback);
 
 	while (1) {
 		rtos::ThisThread::sleep_for(10ms);

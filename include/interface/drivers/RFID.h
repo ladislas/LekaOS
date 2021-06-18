@@ -95,7 +95,7 @@ namespace interface {
 
 		  protected:
 			Command<1> command_requestA		   = {.data = {0x26}, .flags = leka::rfid::Flag::sb_7};
-			Command<2> command_read_register_8 = {.data	 = {0x30, 0x05},
+			Command<2> command_read_register_8 = {.data	 = {0x30, 0x08},
 												  .flags = leka::rfid::Flag::crc | leka::rfid::Flag::sb_8};
 
 			std::array<uint8_t, 2> ATQA_answer {0x44, 0x00};
