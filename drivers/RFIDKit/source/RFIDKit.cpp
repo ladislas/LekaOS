@@ -36,7 +36,7 @@ auto RFIDKit::getTagData(std::array<uint8_t, 16> &tag_data) -> bool
 	}
 
 	sendReadRegister8();
-	if (!receiveTagData()) {
+	if (!receiveReadTagData()) {
 		return false;
 	}
 
