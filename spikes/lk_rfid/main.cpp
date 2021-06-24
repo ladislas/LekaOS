@@ -31,7 +31,7 @@ void printarray(std::array<uint8_t, size> array)
 {
 	printf("Data : ");
 	for (int i = 0; i < size; ++i) {
-		printf("%i, ", array.data()[i]);
+		printf("%c, ", array.data()[i]);
 	}
 	printf("\n");
 }
