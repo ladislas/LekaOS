@@ -320,6 +320,7 @@ TEST_F(CoreCR95HFSensorTest, receiveDataSuccess)
 											   0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0xDA, 0x48};
 
 	std::array<uint8_t, 18> actual_values {0};
+	lstd::span<uint8_t> span = {actual_values};
 
 	setExpectedReveivedData(read_values);
 
@@ -334,6 +335,7 @@ TEST_F(CoreCR95HFSensorTest, receiveDataFailedWrongAnswerFlag)
 {
 	std::array<uint8_t, 7> read_values = {0xff, 0x05, 0x44, 0x00, 0x28, 0x00, 0x00};
 	std::array<uint8_t, 7> actual_values {0};
+	lstd::span<uint8_t> span = {actual_values};
 
 	setExpectedReveivedData(read_values);
 
@@ -349,6 +351,7 @@ TEST_F(CoreCR95HFSensorTest, receiveDataFailedWrongLength)
 {
 	std::array<uint8_t, 7> read_values = {0x80, 0x02, 0x44, 0x00, 0x28, 0x00, 0x00};
 	std::array<uint8_t, 7> actual_values {0};
+	lstd::span<uint8_t> span = {actual_values};
 
 	setExpectedReveivedData(read_values);
 

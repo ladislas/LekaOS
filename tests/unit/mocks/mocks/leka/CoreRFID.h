@@ -18,8 +18,8 @@ class CoreRFIDMock : public interface::RFID
 	MOCK_METHOD(interface::BufferedSerial &, getSerial, (), (override));
 	MOCK_METHOD(void, enableTagDetection, (), (override));
 	MOCK_METHOD(bool, setup, (), (override));
-	MOCK_METHOD(void, send, (const lstd::span<uint8_t> &), (override));
-	MOCK_METHOD(size_t, receiveTagData, (const lstd::span<uint8_t> &), (override));
+	MOCK_METHOD(void, send, (lstd::span<uint8_t>), (override));
+	MOCK_METHOD(size_t, receiveTagData, (lstd::span<uint8_t> *), (override));
 	MOCK_METHOD(bool, receiveCallback, (), (override));
 };
 
