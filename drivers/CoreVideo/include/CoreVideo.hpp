@@ -5,6 +5,8 @@
 #ifndef _LEKA_OS_DRIVER_LKCOREVIDEO_H_
 #define _LEKA_OS_DRIVER_LKCOREVIDEO_H_
 
+#include "CoreJPEG.hpp"
+#include "LKCoreFatFs.h"
 #include "LKCoreSTM32HalBase.h"
 #include "interface/DMA2D.hpp"
 #include "interface/DSI.hpp"
@@ -33,7 +35,8 @@ class CoreVideo
 
 	void clearScreen(CGColor color = CGColor::white);
 	void displayRectangle(interface::Graphics::FilledRectangle rectangle, CGColor color);
-	void displayImage(FIL *file);
+	void displayImage(LKCoreFatFs &file);
+	void displayVideo(LKCoreFatFs &file);
 	void displayText(const char *text, uint32_t size, uint32_t starting_line, CGColor foreground = CGColor::black,
 					 CGColor background = CGColor::white);
 
