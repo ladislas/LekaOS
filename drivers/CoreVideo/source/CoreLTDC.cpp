@@ -8,11 +8,11 @@
 
 namespace leka {
 
-CoreLTDC::CoreLTDC(LKCoreSTM32HalBase &hal, interface::DSIBase &dsi) : _hal(hal), _dsi(dsi)
+CoreLTDC::CoreLTDC(LKCoreSTM32HalBase &hal) : _hal(hal)
 {
 	_hltdc.Instance = LTDC;
 
-	auto props = dsi.getSyncProps();
+	auto props = dsi::sync_props;
 	// Timing and synchronization
 	_hltdc.Init.HorizontalSync	   = props.hsync;
 	_hltdc.Init.AccumulatedHBP	   = props.hsync + props.hbp;
@@ -71,7 +71,9 @@ void CoreLTDC::initialize()
 	// Initialize LTDC layer
 	// This part **must not** be moved to the constructor as LCD
 	// initialization must be performed in a very specific order
-	_hal.HAL_LTDC_ConfigLayer(&_hltdc, &_layerConfig, 1);
+	_hal.HAL_LTDC_ConfigLayer(&_hltdc, &_layerConfig, 0);
+
+	HAL_LTDC_SetPitch(&_hltdc, 800, 0);
 }
 
 void CoreLTDC::configurePeriphClock()
@@ -96,11 +98,6 @@ void CoreLTDC::configurePeriphClock()
 auto CoreLTDC::getHandle() -> LTDC_HandleTypeDef &
 {
 	return _hltdc;
-}
-
-auto CoreLTDC::getLayerConfig() const -> LTDC_LayerCfgTypeDef
-{
-	return _layerConfig;
 }
 
 }	// namespace leka

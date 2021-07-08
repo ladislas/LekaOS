@@ -6,7 +6,7 @@
 
 #include "internal/corevideo_config.h"
 
-namespace leka {
+using namespace leka;
 
 CoreJPEG::CoreJPEG(LKCoreSTM32HalBase &hal, std::unique_ptr<LKCoreJPEGMode> mode) : _hal(hal), _mode(std::move(mode))
 {
@@ -99,7 +99,7 @@ auto CoreJPEG::getWidthOffset(JPEG_ConfTypeDef &config) -> uint32_t
 
 auto CoreJPEG::findFrameOffset(LKCoreFatFsBase &file, uint32_t offset) -> uint32_t
 {
-	static std::array<uint8_t, 512> pattern_search_buffer;
+	std::array<uint8_t, 512> pattern_search_buffer;
 
 	uint32_t index	   = offset;
 	uint32_t read_size = 0;
@@ -124,5 +124,3 @@ auto CoreJPEG::findFrameOffset(LKCoreFatFsBase &file, uint32_t offset) -> uint32
 
 	return 0;
 }
-
-}	// namespace leka

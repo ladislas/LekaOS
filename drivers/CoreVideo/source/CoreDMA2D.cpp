@@ -4,9 +4,10 @@
 
 #include "CoreDMA2D.hpp"
 
+#include "LogKit.h"
 #include "internal/corevideo_config.h"
 
-namespace leka {
+using namespace leka;
 
 CoreDMA2D::CoreDMA2D(LKCoreSTM32HalBase &hal) : _hal(hal)
 {
@@ -54,15 +55,23 @@ auto CoreDMA2D::getHandle() -> DMA2D_HandleTypeDef &
 	return _hdma2d;
 }
 
+void CoreDMA2D::setFrameBufferAddress(uintptr_t address)
+{
+	_frame_buffer_address = address;
+}
+
 void CoreDMA2D::transferData(uintptr_t input, uintptr_t output, uint32_t width, uint32_t height)
 {
-	// TODO(@yann): Check if init and config are needed everytime
-	auto is_initialized = [&] { return _hal.HAL_DMA2D_Init(&_hdma2d) == HAL_OK; };
-	auto is_configured	= [&] { return _hal.HAL_DMA2D_ConfigLayer(&_hdma2d, 1) == HAL_OK; };
-	auto is_started		= [&] { return _hal.HAL_DMA2D_Start(&_hdma2d, input, output, width, height) == HAL_OK; };
-
-	if (is_initialized() && is_configured() && is_started()) {
-		_hal.HAL_DMA2D_PollForTransfer(&_hdma2d, 100);
+	if (_hal.HAL_DMA2D_Init(&_hdma2d) != HAL_OK) {
+		log_error("DMA2D Init error");
+		return;
+	}
+	if (_hal.HAL_DMA2D_ConfigLayer(&_hdma2d, 1) != HAL_OK) {
+		log_error("DMA2D config layer error");
+		return;
+	}
+	if (HAL_DMA2D_Start_IT(&_hdma2d, input, output, width, height) != HAL_OK) {
+		log_error("DMA2D Start IT error");
 	}
 }
 
@@ -72,7 +81,7 @@ void CoreDMA2D::transferImage(uint32_t width, uint32_t height, uint32_t width_of
 	_hdma2d.LayerCfg[1].InputOffset = width_offset;
 	_hdma2d.Init.OutputOffset		= lcd::dimension.width - width;	  // TODO(@yann): Check if needed
 
-	transferData(jpeg::decoded_buffer_address, lcd::frame_buffer_address, width, height);
+	transferData(jpeg::decoded_buffer_address, _frame_buffer_address, width, height);
 }
 
 void CoreDMA2D::transferDrawing(uintptr_t first_pixel_address, uint32_t width, uint32_t height, uint32_t color)
@@ -82,5 +91,3 @@ void CoreDMA2D::transferDrawing(uintptr_t first_pixel_address, uint32_t width, u
 
 	transferData(color, first_pixel_address, width, height);
 }
-
-}	// namespace leka
