@@ -10,8 +10,6 @@
 #include "LKCoreSTM32HalBase.h"
 #include "interface/DMA2D.hpp"
 #include "interface/DSI.hpp"
-#include "interface/Font.hpp"
-#include "interface/Graphics.hpp"
 #include "interface/JPEG.hpp"
 #include "interface/LCD.hpp"
 #include "interface/LTDC.hpp"
@@ -22,9 +20,9 @@ namespace leka {
 class CoreVideo
 {
   public:
-	CoreVideo(LKCoreSTM32HalBase &hal, interface::SDRAM &coresdram, interface::DMA2DBase &coredma2d,
-			  interface::DSIBase &coredsi, interface::LTDCBase &coreltdc, interface::LCD &corelcd,
-			  interface::Graphics &coregraphics, interface::Font &corefont, interface::JPEGBase &corejpeg);
+	CoreVideo(LKCoreSTM32HalBase &hal, interface::LCD &corelcd, interface::DSIBase &coredsi,
+			  interface::LTDCBase &coreltdc, interface::DMA2DBase &coredma2d, interface::JPEGBase &corejpeg,
+			  interface::SDRAM &coresdram);
 
 	void initialize();
 
@@ -33,24 +31,19 @@ class CoreVideo
 
 	void setBrightness(float value);
 
-	void clearScreen(CGColor color = CGColor::white);
-	void displayRectangle(interface::Graphics::FilledRectangle rectangle, CGColor color);
 	void displayImage(LKCoreFatFs &file);
 	void displayVideo(LKCoreFatFs &file);
-	void displayText(const char *text, uint32_t size, uint32_t starting_line, CGColor foreground = CGColor::black,
-					 CGColor background = CGColor::white);
 	void display();
 
   private:
 	LKCoreSTM32HalBase &_hal;
-	interface::SDRAM &_coresdram;
-	interface::DMA2DBase &_coredma2d;
-	interface::LTDCBase &_coreltdc;
-	interface::DSIBase &_coredsi;
+
 	interface::LCD &_corelcd;
-	interface::Graphics &_coregraphics;
-	interface::Font &_corefont;
+	interface::DSIBase &_coredsi;
+	interface::LTDCBase &_coreltdc;
+	interface::DMA2DBase &_coredma2d;
 	interface::JPEGBase &_corejpeg;
+	interface::SDRAM &_coresdram;
 };
 
 }	// namespace leka

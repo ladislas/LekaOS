@@ -12,6 +12,7 @@
 #include "CoreLCDDriverOTM8009A.hpp"
 #include "CoreLTDC.hpp"
 #include "CoreSDRAM.hpp"
+#include "Graphics.h"
 #include "LKCoreSTM32Hal.h"
 
 namespace leka {
@@ -21,22 +22,32 @@ class VideoKit
   public:
 	VideoKit();
 
-	void clear();
+	auto getDSI() -> CoreDSI &;
+	auto getLTDC() -> CoreLTDC &;
+	auto getDMA2D() -> CoreDMA2D &;
+	auto getJPEG() -> CoreJPEG &;
+
+	void initialize();
+
+	void clear(gfx::Color color = gfx::Color::White);
+
+	void drawRectangle(gfx::Rectangle rect, uint32_t x, uint32_t y);
+
 	void display();
 
   private:
 	LKCoreSTM32Hal _hal;
 	CoreSDRAM _coresdram;
 
+	// peripherals
+	CoreJPEG _corejpeg;
+	CoreDMA2D _coredma2d;
+
 	// ltdc + dsi + lcd screen
 	CoreLTDC _coreltdc;
 	CoreDSI _coredsi;
 	CoreLCDDriverOTM8009A _coreotm;
 	CoreLCD _corelcd;
-
-	// peripherals
-	CoreDMA2D _coredma2d;
-	CoreJPEG _corejpeg;
 
 	rtos::Kernel::Clock::time_point _last_time = rtos::Kernel::Clock::now();
 };
