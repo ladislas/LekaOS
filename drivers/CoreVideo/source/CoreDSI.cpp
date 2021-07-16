@@ -91,6 +91,8 @@ void CoreDSI::initialize()
 
 		if (self._current_column != 0) {
 			HAL_DSI_Refresh(hdsi);
+		} else {
+			self._refresh_done = true;
 		}
 	});
 
@@ -190,6 +192,7 @@ void CoreDSI::reset()
 
 void CoreDSI::refresh()
 {
+	_refresh_done = false;
 	if (_sync_on_TE) {
 		// request TE pin
 		uint8_t val[] = {0x00, 0x00};
@@ -206,7 +209,7 @@ void CoreDSI::refresh()
 
 auto CoreDSI::isBusy() -> bool
 {
-	return _handle.State == HAL_DSI_STATE_BUSY;
+	return _handle.State == HAL_DSI_STATE_BUSY || !_refresh_done;
 }
 
 void CoreDSI::write(const uint8_t *data, uint32_t size)
