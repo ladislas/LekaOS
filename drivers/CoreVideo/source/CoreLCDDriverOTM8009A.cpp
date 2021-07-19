@@ -9,10 +9,9 @@
 
 #include "CoreLCDDriverOTM8009A.hpp"
 
-namespace leka {
-
-using namespace std::chrono;
+using namespace leka;
 using namespace lcd::otm8009a;
+using namespace std::chrono_literals;
 
 void CoreLCDDriverOTM8009A::turnOn()
 {
@@ -296,5 +295,3 @@ void CoreLCDDriverOTM8009A::setLandscapeOrientation()
 	_dsi.write(set_address::for_column::array, std::size(set_address::for_column::array));
 	_dsi.write(set_address::for_page::array, std::size(set_address::for_page::array));
 }
-
-}	// namespace leka
