@@ -15,12 +15,14 @@ namespace leka {
 class CoreRFIDMock : public interface::RFID
 {
   public:
-	MOCK_METHOD(interface::BufferedSerial &, getSerial, (), (override));
-	MOCK_METHOD(void, enableTagDetection, (), (override));
-	MOCK_METHOD(bool, setup, (), (override));
-	MOCK_METHOD(void, send, (lstd::span<uint8_t>), (override));
-	MOCK_METHOD(size_t, receiveTagData, (lstd::span<uint8_t> *), (override));
-	MOCK_METHOD(bool, receiveCallback, (), (override));
+	MOCK_METHOD(void, init, (), (override));
+	MOCK_METHOD(void, registerTagAvailableCallback, (tagAvailableCallback), (override));
+	MOCK_METHOD(void, onTagAvailable, (), (override));
+	MOCK_METHOD((std::array<uint8_t, 17>), getIDN, (), (override));
+	MOCK_METHOD(bool, setBaudrate, (uint8_t), (override));
+	MOCK_METHOD(bool, setCommunicationProtocol, (rfid::Protocol), (override));
+	MOCK_METHOD(void, sendCommandToTag, (lstd::span<uint8_t>), (override));
+	MOCK_METHOD(size_t, receiveDataFromTag, (lstd::span<uint8_t> *), (override));
 };
 
 }	// namespace leka

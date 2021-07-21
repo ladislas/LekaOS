@@ -325,7 +325,7 @@ TEST_F(CoreCR95HFSensorTest, receiveDataSuccess)
 	setExpectedReveivedData(read_values);
 
 	corecr95hf.onTagAvailable();
-	uint8_t is_communication_succeed = corecr95hf.receiveDataFromTag(actual_values);
+	uint8_t is_communication_succeed = corecr95hf.receiveDataFromTag(&span);
 
 	ASSERT_EQ(is_communication_succeed, true);
 	ASSERT_EQ(actual_values, expected_values);
@@ -341,7 +341,7 @@ TEST_F(CoreCR95HFSensorTest, receiveDataFailedWrongAnswerFlag)
 
 	corecr95hf.onTagAvailable();
 
-	uint8_t is_communication_succeed = corecr95hf.receiveDataFromTag(actual_values);
+	uint8_t is_communication_succeed = corecr95hf.receiveDataFromTag(&span);
 
 	ASSERT_EQ(is_communication_succeed, false);
 	ASSERT_NE(actual_values, read_values);
@@ -357,7 +357,7 @@ TEST_F(CoreCR95HFSensorTest, receiveDataFailedWrongLength)
 
 	corecr95hf.onTagAvailable();
 
-	uint8_t is_communication_succeed = corecr95hf.receiveDataFromTag(actual_values);
+	uint8_t is_communication_succeed = corecr95hf.receiveDataFromTag(&span);
 
 	ASSERT_EQ(is_communication_succeed, false);
 	ASSERT_NE(actual_values, read_values);

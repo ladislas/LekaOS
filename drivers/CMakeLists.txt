@@ -17,6 +17,7 @@ add_subdirectory(${DRIVERS_DIR}/LKCoreVideo)
 # Sensors drivers
 add_subdirectory(${DRIVERS_DIR}/CoreHTS)
 add_subdirectory(${DRIVERS_DIR}/CoreBattery)
+add_subdirectory(${DRIVERS_DIR}/RFIDKit)
 add_subdirectory(${DRIVERS_DIR}/LKCoreMicrophone)
 add_subdirectory(${DRIVERS_DIR}/LKCoreLightSensor)
 

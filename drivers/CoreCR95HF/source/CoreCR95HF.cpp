@@ -167,13 +167,13 @@ auto CoreCR95HF::formatCommand(lstd::span<uint8_t> cmd) -> size_t
 	return cmd.size() + rfid::cr95hf::tag_answer::heading_size;
 }
 
-auto CoreCR95HF::receiveDataFromTag(lstd::span<uint8_t> data) -> size_t
+auto CoreCR95HF::receiveDataFromTag(lstd::span<uint8_t> *data) -> size_t
 {
-	if (!DataFromTagIsCorrect(data.size())) {
+	if (!DataFromTagIsCorrect((*data).size())) {
 		return 0;
 	}
 
-	copyTagDataToSpan(data);
+	copyTagDataToSpan(*data);
 
 	return true;
 }
