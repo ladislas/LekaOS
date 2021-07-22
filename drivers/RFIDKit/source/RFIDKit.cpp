@@ -14,7 +14,7 @@ void RFIDKit::init()
 	auto getTagDataCallback = []() { self->getTagData(); };
 
 	_rfid_reader.registerTagAvailableCallback(getTagDataCallback);
-	_rfid_reader.init();
+	// _rfid_reader.init();
 }
 
 void RFIDKit::getTagData()
@@ -22,26 +22,36 @@ void RFIDKit::getTagData()
 	_rfid_reader.setCommunicationProtocol(rfid::Protocol::ISO14443A);
 
 	sendREQA();
-	receiveATQA();
+	printf("send REQA \n");
 
-	sendReadRegister8();
-	receiveReadTagData();
-}
-
-auto RFIDKit::getTagData(std::array<uint8_t, 16> &tag_data) -> bool
-{
-	sendREQA();
-	if (!receiveATQA()) {
-		return false;
+	if (receiveATQA()) {
+		printf("receiveATQA succeed \n");
 	}
 
-	sendReadRegister8();
-	if (!receiveReadTagData()) {
-		return false;
+	sendReadRegister0();
+	printf("send read \n");
+
+	if (receiveReadTagData()) {
+		printf("Receive data Succeed\n");
 	}
 
-	getData(tag_data);
-	return true;
+	// printf("send authentification\n");
+	// sendAuthentificate();
+	// printf("receive authentification \n");
+	// receiveAuthentificate();
+
+	// printf("send write \n");
+	// std::array<uint8_t, 4> dataToWrite = {0x4C, 0x65, 0x6B, 0x61};
+	// sendWriteRegister(32, dataToWrite);
+	// printf("receive write \n");
+	// receiveWriteTagData();
+
+	// sendReadRegister8();
+	// printf("send read \n");
+
+	// if (receiveReadTagData()) {
+	// 	printf("Receive data Succeed\n");
+	// }
 }
 
 void RFIDKit::sendREQA()
@@ -53,6 +63,15 @@ void RFIDKit::sendREQA()
 	_rfid_reader.sendCommandToTag(array);
 }
 
+void RFIDKit::sendReadRegister0()
+{
+	std::array<uint8_t, 3> array {};
+
+	commandToArray(command_read_register_0, array);
+
+	_rfid_reader.sendCommandToTag(array);
+}
+
 void RFIDKit::sendReadRegister8()
 {
 	std::array<uint8_t, 3> array {};
@@ -60,6 +79,51 @@ void RFIDKit::sendReadRegister8()
 	commandToArray(command_read_register_8, array);
 
 	_rfid_reader.sendCommandToTag(array);
+}
+
+void RFIDKit::sendWriteRegister(uint8_t registerToWrite, std::array<uint8_t, 4> data)
+{
+	std::array<uint8_t, 7> array {};
+
+	array[0] = 0xA2;
+	array[1] = registerToWrite;
+
+	for (int i = 0; i < 4; ++i) {
+		array[i + 2] = data[i];
+	}
+	array[6] = 0x28;
+
+	_rfid_reader.sendCommandToTag(array);
+}
+
+void RFIDKit::receiveWriteTagData()
+{
+	std::array<uint8_t, 2> ATQA_answer {};
+	lstd::span<uint8_t> span = {ATQA_answer};
+
+	_rfid_reader.receiveDataFromTag(&span);
+}
+
+void RFIDKit::sendAuthentificate()
+{
+	std::array<uint8_t, 6> array {};
+
+	array[0] = 0x1B;
+	array[1] = 0xff;
+	array[2] = 0xff;
+	array[3] = 0xff;
+	array[4] = 0xff;
+	array[5] = 0x28;
+
+	_rfid_reader.sendCommandToTag(array);
+}
+
+void RFIDKit::receiveAuthentificate()
+{
+	std::array<uint8_t, 4> authentificate_answer {};
+	lstd::span<uint8_t> span = {authentificate_answer};
+
+	_rfid_reader.receiveDataFromTag(&span);
 }
 
 auto RFIDKit::receiveATQA() -> bool
@@ -80,13 +144,16 @@ auto RFIDKit::receiveReadTagData() -> bool
 	lstd::span<uint8_t> span = {_tag_data};
 	_rfid_reader.receiveDataFromTag(&span);
 
+	printf("Data read : ");
 	for (size_t i = 0; i < span.size(); ++i) {
 		_tag.data[i] = span.data()[i];
+		printf("%i ", _tag.data[i]);
 	}
+	printf("\n");
 
-	std::array<uint8_t, 2> received_crc = {span.data()[16], span.data()[17]};
+	std::array<uint8_t, 2> received_crc = {span[16], span[17]};
 
-	return received_crc == computeCRC(_tag_data.data()) ? true : false;
+	return received_crc == computeCRC(span.data()) ? true : false;
 }
 
 auto RFIDKit::computeCRC(uint8_t const *data) const -> std::array<uint8_t, 2>

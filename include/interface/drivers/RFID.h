@@ -5,10 +5,11 @@
 #ifndef _LEKA_OS_DRIVER_LK_KIT_RFID_INTERFACE_H_
 #define _LEKA_OS_DRIVER_LK_KIT_RFID_INTERFACE_H_
 
+#include "mbed.h"
 #include <cstdint>
 #include <functional>
 
-using tagAvailableCallback = std::function<void()>;
+using tagAvailableCallback = Callback<void()>;
 
 #include "BufferedSerial.h"
 
@@ -66,6 +67,8 @@ namespace interface {
 
 		virtual auto receiveDataFromTag(lstd::span<uint8_t> *data) -> size_t = 0;
 
+		std::array<uint8_t, 32> _rx_buf {};
+
 		class ISO14443
 		{
 		  public:
@@ -95,7 +98,9 @@ namespace interface {
 
 		  protected:
 			Command<1> command_requestA		   = {.data = {0x26}, .flags = leka::rfid::Flag::sb_7};
-			Command<2> command_read_register_8 = {.data	 = {0x30, 0x08},
+			Command<2> command_read_register_0 = {.data	 = {0x30, 0x00},
+												  .flags = leka::rfid::Flag::crc | leka::rfid::Flag::sb_8};
+			Command<2> command_read_register_8 = {.data	 = {0x30, 0x2F},
 												  .flags = leka::rfid::Flag::crc | leka::rfid::Flag::sb_8};
 
 			std::array<uint8_t, 2> ATQA_answer {0x44, 0x00};

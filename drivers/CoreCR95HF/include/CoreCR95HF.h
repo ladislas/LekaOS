@@ -168,11 +168,14 @@ class CoreCR95HF : public interface::RFID
 	void sendCommandToTag(lstd::span<uint8_t> cmd) final;
 	auto receiveDataFromTag(lstd::span<uint8_t> *data) -> size_t final;
 
+	void setModeTagDetection();
+
+	std::array<uint8_t, rfid::cr95hf::max_rx_length> _rx_buf {};
+
   private:
 	void registerCallback();
 
 	auto receiveTagDetectionCallback() -> bool;
-	void setModeTagDetection();
 
 	auto writeConfiguration(lstd::span<uint8_t> conf) -> size_t;
 
@@ -198,7 +201,6 @@ class CoreCR95HF : public interface::RFID
 
 	size_t _anwser_size {0};
 	std::array<uint8_t, rfid::cr95hf::max_tx_length> _tx_buf {};
-	std::array<uint8_t, rfid::cr95hf::max_rx_length> _rx_buf {};
 };
 
 }	// namespace leka

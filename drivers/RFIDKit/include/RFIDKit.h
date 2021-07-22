@@ -35,10 +35,17 @@ class RFIDKit : public interface::RFID::ISO14443
 	}
 
 	void sendREQA();
+	void sendReadRegister0();
 	void sendReadRegister8();
+	void sendWriteRegister(uint8_t register, std::array<uint8_t, 4> data);
 
 	auto receiveATQA() -> bool;
 	auto receiveReadTagData() -> bool;
+	void receiveWriteTagData();
+
+	void sendAuthentificate();
+	void receiveAuthentificate();
+
 	auto computeCRC(uint8_t const *data) const -> std::array<uint8_t, 2>;
 
 	void getData(std::array<uint8_t, 16> &tag_data);

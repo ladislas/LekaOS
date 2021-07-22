@@ -16,13 +16,19 @@ namespace leka {
 
 void CoreCR95HF::registerCallback()
 {
-	static auto *self = this;
-	auto callback	  = []() { self->onTagAvailable(); };
-	_serial.sigio(callback);
+	// printf("Register Callback \n");
+	// static auto *self = this;
+	// auto callback	  = []() { self->onTagAvailable(); };
+
+	// printf("before sigio \n");
+	// _serial.sigio(callback);
+
+	setModeTagDetection();
 }
 
 void CoreCR95HF::onTagAvailable()
 {
+	// printf("On tag Available \n");
 	read();
 
 	if (receiveTagDetectionCallback()) {
@@ -35,9 +41,15 @@ void CoreCR95HF::onTagAvailable()
 void CoreCR95HF::read()
 {
 	rtos::ThisThread::sleep_for(10ms);
-	if (_serial.readable()) {
+	while (_serial.readable()) {
 		_anwser_size = _serial.read(_rx_buf.data(), _rx_buf.size());
 	}
+
+	// printf("Data from CR95HF (%i):", _anwser_size);
+	// for (uint8_t elem: _rx_buf) {
+	// 	printf(" %i", elem);
+	// }
+	// printf("\n");
 }
 
 auto CoreCR95HF::receiveTagDetectionCallback() -> bool
@@ -118,6 +130,11 @@ auto CoreCR95HF::setCommunicationProtocol(rfid::Protocol protocol) -> bool
 		setCommunicationProtocol = setProtocolISO14443A() && setGainAndModulationISO14443A();
 	}
 
+	if (setCommunicationProtocol) {
+		printf("SetCommunicationProtocol succeed\n");
+	} else {
+		printf("SetCommunicationProtocol failed\n");
+	}
 	return setCommunicationProtocol;
 }
 
@@ -125,6 +142,9 @@ auto CoreCR95HF::setProtocolISO14443A() -> bool
 {
 	_serial.write(rfid::cr95hf::command::frame::set_protocol_iso14443.data(),
 				  rfid::cr95hf::command::frame::set_protocol_iso14443.size());
+
+	rtos::ThisThread::sleep_for(10ms);
+	read();
 
 	return didsetCommunicationProtocolSucceed();
 }
@@ -134,15 +154,14 @@ auto CoreCR95HF::setGainAndModulationISO14443A() -> bool
 	_serial.write(rfid::cr95hf::command::frame::set_gain_and_modulation.data(),
 				  rfid::cr95hf::command::frame::set_gain_and_modulation.size());
 
+	read();
+
 	return didsetCommunicationProtocolSucceed();
 }
 
 auto CoreCR95HF::didsetCommunicationProtocolSucceed() -> bool
 {
-	if (_anwser_size != 2) {
-		return false;
-	}
-
+	printf("Check SetProtocol : %i, %i\n", _rx_buf[0], _rx_buf[1]);
 	std::array<uint8_t, 2> buffer {_rx_buf[0], _rx_buf[1]};
 
 	return buffer == rfid::cr95hf::status::setup_success ? true : false;
@@ -164,11 +183,19 @@ auto CoreCR95HF::formatCommand(lstd::span<uint8_t> cmd) -> size_t
 		_tx_buf[i + rfid::cr95hf::tag_answer::heading_size] = cmd[i];
 	}
 
+	// printf("Values data send :");
+	// for (auto i = 0; i < cmd.size() + 2; ++i) {
+	// 	printf("%i ", _tx_buf[i]);
+	// }
+	// printf("\n");
+
 	return cmd.size() + rfid::cr95hf::tag_answer::heading_size;
 }
 
 auto CoreCR95HF::receiveDataFromTag(lstd::span<uint8_t> *data) -> size_t
 {
+	read();
+
 	if (!DataFromTagIsCorrect((*data).size())) {
 		return 0;
 	}
