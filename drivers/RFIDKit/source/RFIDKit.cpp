@@ -29,29 +29,29 @@ void RFIDKit::getTagData()
 	}
 
 	sendReadRegister0();
+	printf("send read register 0\n");
+
+	if (receiveReadTagData()) {
+		printf("Receive data from register 0 Succeed\n");
+	}
+
+	// printf("send authentification\n"); //useful to write in register after 0x0f
+	// sendAuthentificate();
+	// printf("receive authentification \n");
+	// receiveAuthentificate();
+
+	printf("send write \n");
+	std::array<uint8_t, 4> dataToWrite = {0x4C, 0x65, 0x6B, 0x61};
+	sendWriteRegister(6, dataToWrite);
+	printf("receive write \n");
+	receiveWriteTagData();
+
+	sendReadRegister6();
 	printf("send read \n");
 
 	if (receiveReadTagData()) {
 		printf("Receive data Succeed\n");
 	}
-
-	// printf("send authentification\n");
-	// sendAuthentificate();
-	// printf("receive authentification \n");
-	// receiveAuthentificate();
-
-	// printf("send write \n");
-	// std::array<uint8_t, 4> dataToWrite = {0x4C, 0x65, 0x6B, 0x61};
-	// sendWriteRegister(32, dataToWrite);
-	// printf("receive write \n");
-	// receiveWriteTagData();
-
-	// sendReadRegister8();
-	// printf("send read \n");
-
-	// if (receiveReadTagData()) {
-	// 	printf("Receive data Succeed\n");
-	// }
 }
 
 void RFIDKit::sendREQA()
@@ -72,11 +72,11 @@ void RFIDKit::sendReadRegister0()
 	_rfid_reader.sendCommandToTag(array);
 }
 
-void RFIDKit::sendReadRegister8()
+void RFIDKit::sendReadRegister6()
 {
 	std::array<uint8_t, 3> array {};
 
-	commandToArray(command_read_register_8, array);
+	commandToArray(command_read_register_6, array);
 
 	_rfid_reader.sendCommandToTag(array);
 }

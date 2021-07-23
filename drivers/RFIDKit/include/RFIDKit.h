@@ -36,7 +36,7 @@ class RFIDKit : public interface::RFID::ISO14443
 
 	void sendREQA();
 	void sendReadRegister0();
-	void sendReadRegister8();
+	void sendReadRegister6();
 	void sendWriteRegister(uint8_t register, std::array<uint8_t, 4> data);
 
 	auto receiveATQA() -> bool;
