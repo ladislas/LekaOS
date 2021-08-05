@@ -6,7 +6,7 @@
 
 #include "CoreLCDDriverOTM8009A.hpp"
 #include "gtest/gtest.h"
-#include "mocks/leka/CoreDSI.h"
+#include "mocks/leka/CoreVideo/CoreDSI.h"
 #include "mocks/leka/LKCoreSTM32Hal.h"
 #include "stubs/mbed/PwmOut.h"
 
