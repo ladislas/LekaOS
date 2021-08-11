@@ -10,11 +10,14 @@
 namespace leka {
 void RFIDKit::init()
 {
-	static auto *self		= this;
-	auto getTagDataCallback = []() { self->getTagData(); };
+	printf("init \n");
+	// static auto *driver = &_rfid_reader;
+
+	static auto *self			   = this;
+	static auto getTagDataCallback = []() { self->getTagData(); };
 
 	_rfid_reader.registerTagAvailableCallback(getTagDataCallback);
-	// _rfid_reader.init();
+	_rfid_reader.init();
 }
 
 void RFIDKit::getTagData()
@@ -22,17 +25,17 @@ void RFIDKit::getTagData()
 	_rfid_reader.setCommunicationProtocol(rfid::Protocol::ISO14443A);
 
 	sendREQA();
-	printf("send REQA \n");
+	// printf("send REQA \n");
 
 	if (receiveATQA()) {
-		printf("receiveATQA succeed \n");
+		// printf("receiveATQA succeed \n");
 	}
 
 	sendReadRegister0();
-	printf("send read register 0\n");
+	// printf("send read register 0\n");
 
 	if (receiveReadTagData()) {
-		printf("Receive data from register 0 Succeed\n");
+		// printf("Receive data from register 0 Succeed\n");
 	}
 
 	// printf("send authentification\n"); //useful to write in register after 0x0f
@@ -40,17 +43,17 @@ void RFIDKit::getTagData()
 	// printf("receive authentification \n");
 	// receiveAuthentificate();
 
-	printf("send write \n");
+	// printf("send write \n");
 	std::array<uint8_t, 4> dataToWrite = {0x4C, 0x65, 0x6B, 0x61};
 	sendWriteRegister(6, dataToWrite);
-	printf("receive write \n");
+	// printf("receive write \n");
 	receiveWriteTagData();
 
 	sendReadRegister6();
-	printf("send read \n");
+	// printf("send read \n");
 
 	if (receiveReadTagData()) {
-		printf("Receive data Succeed\n");
+		// printf("Receive data Succeed\n");
 	}
 }
 
@@ -144,12 +147,12 @@ auto RFIDKit::receiveReadTagData() -> bool
 	lstd::span<uint8_t> span = {_tag_data};
 	_rfid_reader.receiveDataFromTag(&span);
 
-	printf("Data read : ");
-	for (size_t i = 0; i < span.size(); ++i) {
-		_tag.data[i] = span.data()[i];
-		printf("%i ", _tag.data[i]);
-	}
-	printf("\n");
+	// printf("Data read : ");
+	// for (size_t i = 0; i < span.size(); ++i) {
+	// 	_tag.data[i] = span.data()[i];
+	// 	printf("%i ", _tag.data[i]);
+	// }
+	// printf("\n");
 
 	std::array<uint8_t, 2> received_crc = {span[16], span[17]};
 

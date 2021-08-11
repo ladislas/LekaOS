@@ -16,19 +16,19 @@ namespace leka {
 
 void CoreCR95HF::registerCallback()
 {
-	// printf("Register Callback \n");
-	// static auto *self = this;
-	// auto callback	  = []() { self->onTagAvailable(); };
+	printf("Register Callback \n");
+	static auto *self	 = this;
+	static auto callback = []() { self->onTagAvailable(); };
 
-	// printf("before sigio \n");
-	// _serial.sigio(callback);
+	printf("before sigio \n");
+	_serial.sigio(callback);
 
+	printf("after sigio \n");
 	setModeTagDetection();
 }
 
 void CoreCR95HF::onTagAvailable()
 {
-	// printf("On tag Available \n");
 	read();
 
 	if (receiveTagDetectionCallback()) {

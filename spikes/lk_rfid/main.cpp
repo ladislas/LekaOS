@@ -118,8 +118,13 @@ void onCallback(void)
 	eventQueue.call(getData);
 }
 
-void test()
+auto main() -> int
 {
+	rtos::Thread thread1;
+	rtos::Thread thread2;
+
+	thread2.start(mbed::callback(&eventQueue, &EventQueue::dispatch_forever));
+
 	static auto log_serial = mbed::BufferedSerial(USBTX, USBRX, 115200);
 	leka::logger::set_print_function([](const char *str, size_t size) { log_serial.write(str, size); });
 
@@ -136,19 +141,6 @@ void test()
 	hello.start();
 
 	while (true) {
-		rtos::ThisThread::sleep_for(10ms);
-	}
-}
-
-auto main() -> int
-{
-	rtos::Thread thread1;
-	rtos::Thread thread2;
-
-	thread1.start(test);
-	thread2.start(mbed::callback(&eventQueue, &EventQueue::dispatch_forever));
-
-	while (1) {
 		rtos::ThisThread::sleep_for(10ms);
 	}
 }
