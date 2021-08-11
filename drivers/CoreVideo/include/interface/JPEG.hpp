@@ -8,6 +8,7 @@
 #include "LKCoreFatFsBase.h"
 #include "LKCoreSTM32HalBase.h"
 #include "interface/ComponentHandler.h"
+#include "interface/platform/File.h"
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_jpeg.h"
 
@@ -22,7 +23,7 @@ class JPEGBase : public ComponentHandler<JPEG_HandleTypeDef>
 
 	virtual void registerCallbacks() = 0;
 
-	virtual auto decodeImage(LKCoreFatFsBase &) -> uint32_t = 0;
+	virtual auto decodeImage(interface::File &) -> uint32_t = 0;
 };
 
 }	// namespace leka::interface

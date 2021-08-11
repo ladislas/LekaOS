@@ -29,6 +29,7 @@ target_link_libraries(CoreVideo
 		LKCoreLL
 		LKCoreSTM32Hal
 		CoreFs
+		FileSystemKit
 		LogKit
 )
 
