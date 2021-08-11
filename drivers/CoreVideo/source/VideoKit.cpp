@@ -1,9 +1,9 @@
-#include "LKVideoKit.h"
+#include "VideoKit.h"
 
 using namespace leka;
 using namespace std::chrono_literals;
 
-LKVideoKit::LKVideoKit()
+VideoKit::VideoKit()
 	: _coresdram(_hal),
 	  // screen + dsi + ltdc
 	  _coreltdc(_hal),
@@ -12,16 +12,16 @@ LKVideoKit::LKVideoKit()
 	  _corelcd(_coreotm),
 	  // peripherals
 	  _coredma2d(_hal),
-	  _corejpeg(_hal, std::make_unique<LKCoreJPEGDMAMode>())
+	  _corejpeg(_hal, std::make_unique<CoreJPEGDMAMode>())
 {
 }
 
-void LKVideoKit::clear()
+void VideoKit::clear()
 {
 	// TODO
 }
 
-void LKVideoKit::display()
+void VideoKit::display()
 {
 	// wait for DMA2D to finish transfer
 	while (_coredma2d.getHandle().State != HAL_DMA2D_STATE_READY)

@@ -5,12 +5,12 @@
 #ifndef _LEKA_OS_DRIVER_CORE_VIDEO_INTERFACE_LTDC_BASE_H_
 #define _LEKA_OS_DRIVER_CORE_VIDEO_INTERFACE_LTDC_BASE_H_
 
-#include "LKComponentHandler.h"
+#include "interface/ComponentHandler.h"
 #include "stm32f7xx_hal.h"
 
 namespace leka::interface {
 
-class LTDCBase : public LKComponentHandler<LTDC_HandleTypeDef>
+class LTDCBase : public ComponentHandler<LTDC_HandleTypeDef>
 {
   public:
 	virtual ~LTDCBase()		  = default;

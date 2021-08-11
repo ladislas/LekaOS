@@ -24,9 +24,9 @@
 #include "LKCoreFatFs.h"
 #include "LKCoreLL.h"
 #include "LKCoreSTM32Hal.h"
-#include "LKVideoKit.h"
 #include "LogKit.h"
 #include "SDBlockDevice.h"
+#include "VideoKit.h"
 
 using namespace leka;
 using namespace std::chrono;
@@ -46,7 +46,7 @@ CoreLCD corelcd(coreotm);
 
 // peripherals
 CoreDMA2D coredma2d(hal);
-CoreJPEG corejpeg(hal, std::make_unique<LKCoreJPEGDMAMode>());
+CoreJPEG corejpeg(hal, std::make_unique<CoreJPEGDMAMode>());
 
 // graphics (will move to libs/VideoKit)
 LKCoreLL corell;
@@ -56,7 +56,7 @@ CoreGraphics coregraphics(coredma2d);
 
 CoreVideo corevideo(hal, coresdram, coredma2d, coredsi, coreltdc, corelcd, coregraphics, corefont, corejpeg);
 
-LKVideoKit screen;
+VideoKit screen;
 
 std::vector<const char *> images = {"assets/images/Leka/logo.jpg", "assets/images/Leka/image.jpg"};
 

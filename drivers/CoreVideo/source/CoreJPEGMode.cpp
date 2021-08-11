@@ -1,11 +1,11 @@
-#include "LKCoreJPEGMode.h"
+#include "CoreJPEGMode.h"
 
 using namespace leka;
 
 //------------------ Default Callbacks ------------------------
-void LKCoreJPEGMode::onMspInitCallback(JPEG_HandleTypeDef *hjpeg) {}
+void CoreJPEGMode::onMspInitCallback(JPEG_HandleTypeDef *hjpeg) {}
 
-void LKCoreJPEGMode::onInfoReadyCallback(JPEG_HandleTypeDef *hjpeg, JPEG_ConfTypeDef *info)
+void CoreJPEGMode::onInfoReadyCallback(JPEG_HandleTypeDef *hjpeg, JPEG_ConfTypeDef *info)
 {
 	switch (info->ChromaSubsampling) {
 		case JPEG_420_SUBSAMPLING:
@@ -30,19 +30,19 @@ void LKCoreJPEGMode::onInfoReadyCallback(JPEG_HandleTypeDef *hjpeg, JPEG_ConfTyp
 	}
 }
 
-void LKCoreJPEGMode::onErrorCallback(JPEG_HandleTypeDef *hjpeg)
+void CoreJPEGMode::onErrorCallback(JPEG_HandleTypeDef *hjpeg)
 {
 	while (true)
 		;
 }
 
-void LKCoreJPEGMode::onDecodeCompleteCallback(JPEG_HandleTypeDef *hjpeg)
+void CoreJPEGMode::onDecodeCompleteCallback(JPEG_HandleTypeDef *hjpeg)
 {
 	_hw_decode_ended = true;
 }
 
 //------------------ DMA Mode ------------------------
-void LKCoreJPEGDMAMode::onMspInitCallback(JPEG_HandleTypeDef *hjpeg)
+void CoreJPEGDMAMode::onMspInitCallback(JPEG_HandleTypeDef *hjpeg)
 {
 	// enable DMA2 clock
 	__HAL_RCC_DMA2_CLK_ENABLE();
@@ -96,7 +96,7 @@ void LKCoreJPEGDMAMode::onMspInitCallback(JPEG_HandleTypeDef *hjpeg)
 	HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
 }
 
-auto LKCoreJPEGDMAMode::decodeImage(JPEG_HandleTypeDef *hjpeg, FIL *file) -> uint32_t
+auto CoreJPEGDMAMode::decodeImage(JPEG_HandleTypeDef *hjpeg, FIL *file) -> uint32_t
 {
 	static std::array<uint8_t, jpeg::chunk_size_in * jpeg::in_buffers_nb> BIG_CHUNGUS_OF_MEMORY_IN;
 	static std::array<uint8_t, jpeg::chunk_size_out * jpeg::out_buffers_nb> BIG_CHUNGUS_OF_MEMORY_OUT;
@@ -159,7 +159,7 @@ auto LKCoreJPEGDMAMode::decodeImage(JPEG_HandleTypeDef *hjpeg, FIL *file) -> uin
 	return previous_image_size;
 }
 
-void LKCoreJPEGDMAMode::onGetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t decoded_datasize)
+void CoreJPEGDMAMode::onGetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t decoded_datasize)
 {
 	auto &read_buffer	   = _in_buffers[_in_read_index];
 	auto &next_read_buffer = _in_buffers[(_in_read_index + 1) % jpeg::in_buffers_nb];
@@ -183,7 +183,7 @@ void LKCoreJPEGDMAMode::onGetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t de
 	previous_image_size += decoded_datasize;
 }
 
-void LKCoreJPEGDMAMode::onDataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *output_data, uint32_t output_datasize)
+void CoreJPEGDMAMode::onDataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *output_data, uint32_t output_datasize)
 {
 	auto &write_buffer		= _out_buffers[_out_write_index];
 	auto &next_write_buffer = _out_buffers[(_out_write_index + 1) % jpeg::out_buffers_nb];
@@ -200,7 +200,7 @@ void LKCoreJPEGDMAMode::onDataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *
 	HAL_JPEG_ConfigOutputBuffer(hjpeg, next_write_buffer.data, jpeg::chunk_size_out);
 }
 
-void LKCoreJPEGDMAMode::decoderInputHandler(JPEG_HandleTypeDef *hjpeg, FIL *file)
+void CoreJPEGDMAMode::decoderInputHandler(JPEG_HandleTypeDef *hjpeg, FIL *file)
 {
 	auto &write_buffer = _in_buffers[_in_write_index];
 	auto &read_buffer  = _in_buffers[_in_read_index];
@@ -222,7 +222,7 @@ void LKCoreJPEGDMAMode::decoderInputHandler(JPEG_HandleTypeDef *hjpeg, FIL *file
 	}
 }
 
-auto LKCoreJPEGDMAMode::decoderOutputHandler(JPEG_HandleTypeDef *hjpeg) -> bool
+auto CoreJPEGDMAMode::decoderOutputHandler(JPEG_HandleTypeDef *hjpeg) -> bool
 {
 	uint32_t converted_data_count;
 	auto &read_buffer  = _out_buffers[_out_read_index];

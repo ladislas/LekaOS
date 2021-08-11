@@ -5,12 +5,12 @@
 #ifndef _LEKA_OS_DRIVER_CORE_VIDEO_INTERFACE_DSI_BASE_H_
 #define _LEKA_OS_DRIVER_CORE_VIDEO_INTERFACE_DSI_BASE_H_
 
-#include "LKComponentHandler.h"
+#include "interface/ComponentHandler.h"
 #include "stm32f7xx_hal.h"
 
 namespace leka::interface {
 
-class DSIBase : public LKComponentHandler<DSI_HandleTypeDef>
+class DSIBase : public ComponentHandler<DSI_HandleTypeDef>
 {
   public:
 	virtual ~DSIBase() = default;

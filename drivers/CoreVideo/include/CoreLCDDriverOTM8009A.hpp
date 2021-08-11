@@ -11,7 +11,6 @@
 #include "interface/LCDDriver.hpp"
 
 namespace leka {
-
 // ? OTM8009A LCD driver datasheet available at:
 // ? http://www.orientdisplay.com/pdf/OTM8009A.pdf
 

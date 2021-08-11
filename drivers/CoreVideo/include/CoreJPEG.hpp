@@ -9,8 +9,8 @@
 #include <cstdint>
 #include <memory>
 
+#include "CoreJPEGMode.h"
 #include "LKCoreFatFsBase.h"
-#include "LKCoreJPEGMode.h"
 #include "LKCoreSTM32HalBase.h"
 #include "external/st_jpeg_utils.h"
 #include "interface/JPEG.hpp"
@@ -20,7 +20,7 @@ namespace leka {
 class CoreJPEG : public interface::JPEGBase
 {
   public:
-	CoreJPEG(LKCoreSTM32HalBase &hal, std::unique_ptr<LKCoreJPEGMode> mode);
+	CoreJPEG(LKCoreSTM32HalBase &hal, std::unique_ptr<CoreJPEGMode> mode);
 
 	void initialize() final;
 
@@ -36,7 +36,7 @@ class CoreJPEG : public interface::JPEGBase
   private:
 	LKCoreSTM32HalBase &_hal;
 
-	std::unique_ptr<LKCoreJPEGMode> _mode;
+	std::unique_ptr<CoreJPEGMode> _mode;
 };
 
 }	// namespace leka

@@ -12,8 +12,8 @@
 
 namespace leka {
 
-struct LKCoreJPEGMode {
-	~LKCoreJPEGMode() = default;
+struct CoreJPEGMode {
+	~CoreJPEGMode() = default;
 
 	virtual auto decodeImage(JPEG_HandleTypeDef *hjpeg, FIL *file) -> uint32_t = 0;
 
@@ -35,15 +35,15 @@ struct LKCoreJPEGMode {
 	uint32_t previous_image_size = 0;
 
   protected:
-	LKCoreJPEGMode() = default;
+	CoreJPEGMode() = default;
 
 	uint32_t _mcu_number	  = 0;
 	uint32_t _mcu_block_index = 0;
 	bool _hw_decode_ended	  = false;
 };
 
-struct LKCoreJPEGDMAMode : LKCoreJPEGMode {
-	LKCoreJPEGDMAMode() = default;
+struct CoreJPEGDMAMode : CoreJPEGMode {
+	CoreJPEGDMAMode() = default;
 
 	auto decodeImage(JPEG_HandleTypeDef *hjpeg, FIL *file) -> uint32_t final;
 
