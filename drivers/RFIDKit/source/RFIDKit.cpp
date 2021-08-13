@@ -11,10 +11,7 @@ namespace leka {
 void RFIDKit::init()
 {
 	printf("init \n");
-	// static auto *driver = &_rfid_reader;
-
-	static auto *self			   = this;
-	static auto getTagDataCallback = []() { self->getTagData(); };
+	static auto getTagDataCallback = [this]() { this->getTagData(); };
 
 	_rfid_reader.registerTagAvailableCallback(getTagDataCallback);
 	_rfid_reader.init();
@@ -22,38 +19,61 @@ void RFIDKit::init()
 
 void RFIDKit::getTagData()
 {
-	_rfid_reader.setCommunicationProtocol(rfid::Protocol::ISO14443A);
+	switch (_state) {
+		case state::SENSOR_WAKE_UP: {
+			printf("CURRENT STATE : SENSOR_SLEEP\n");
+			if (_rfid_reader.checkForTagDetection()) {
+				_rfid_reader.setCommunicationProtocol(rfid::Protocol::ISO14443A);
+				_state = state::TAG_COMMUNICATION_PROTOCOL_SET;
+			} else {
+				_rfid_reader.setModeTagDetection();
+			}
 
-	sendREQA();
-	// printf("send REQA \n");
+		} break;
 
-	if (receiveATQA()) {
-		// printf("receiveATQA succeed \n");
-	}
+		case state::TAG_COMMUNICATION_PROTOCOL_SET: {
+			printf("CURRENT STATE : TAG_PROTOCOL_SET\n");
+			sendREQA();
+			_state = state::WAIT_FOR_ATQA_RESPONSE;
 
-	sendReadRegister0();
-	// printf("send read register 0\n");
+		} break;
 
-	if (receiveReadTagData()) {
-		// printf("Receive data from register 0 Succeed\n");
-	}
+		case state::WAIT_FOR_ATQA_RESPONSE: {
+			if (receiveATQA()) {
+				sendReadRegister0();
+				_state = state::TAG_IDENTIFIED;
+			} else {
+				_rfid_reader.setModeTagDetection();
+				_state = state::SENSOR_WAKE_UP;
+			}
+		} break;
 
-	// printf("send authentification\n"); //useful to write in register after 0x0f
-	// sendAuthentificate();
-	// printf("receive authentification \n");
-	// receiveAuthentificate();
+		case state::TAG_IDENTIFIED: {
+			printf("CURRENT STATE : TAG_IDENTIFIED\n");
 
-	// printf("send write \n");
-	std::array<uint8_t, 4> dataToWrite = {0x4C, 0x65, 0x6B, 0x61};
-	sendWriteRegister(6, dataToWrite);
-	// printf("receive write \n");
-	receiveWriteTagData();
+			if (receiveReadTagData()) {
+				sendReadRegister6();
+				_state = state::TAG_ACTIVATED;
+			} else {
+				_rfid_reader.setModeTagDetection();
+				_state = state::SENSOR_WAKE_UP;
+			}
+		} break;
+		case state::TAG_ACTIVATED: {
+			printf("CURRENT STATE : TAG_ACTIVATED\n");
 
-	sendReadRegister6();
-	// printf("send read \n");
+			if (receiveReadTagData()) {
+				printf("Data : ");
+				for (int i = 0; i < _tag.data.size(); ++i) {
+					printf("%c, ", _tag.data[i]);
+				}
+				printf("\n");
+			}
 
-	if (receiveReadTagData()) {
-		// printf("Receive data Succeed\n");
+			_rfid_reader.setModeTagDetection();
+			_state = state::SENSOR_WAKE_UP;
+
+		} break;
 	}
 }
 
@@ -104,7 +124,7 @@ void RFIDKit::receiveWriteTagData()
 	std::array<uint8_t, 2> ATQA_answer {};
 	lstd::span<uint8_t> span = {ATQA_answer};
 
-	_rfid_reader.receiveDataFromTag(&span);
+	_rfid_reader.receiveDataFromTag(span);
 }
 
 void RFIDKit::sendAuthentificate()
@@ -126,7 +146,7 @@ void RFIDKit::receiveAuthentificate()
 	std::array<uint8_t, 4> authentificate_answer {};
 	lstd::span<uint8_t> span = {authentificate_answer};
 
-	_rfid_reader.receiveDataFromTag(&span);
+	_rfid_reader.receiveDataFromTag(span);
 }
 
 auto RFIDKit::receiveATQA() -> bool
@@ -134,25 +154,20 @@ auto RFIDKit::receiveATQA() -> bool
 	std::array<uint8_t, 2> ATQA_answer {};
 	lstd::span<uint8_t> span = {ATQA_answer};
 
-	_rfid_reader.receiveDataFromTag(&span);
+	_rfid_reader.receiveDataFromTag(span);
 
 	return (span[0] == interface::RFID::ISO14443::ATQA_answer[0] &&
-			span[1] == interface::RFID::ISO14443::ATQA_answer[1])
-			   ? true
-			   : false;
+			span[1] == interface::RFID::ISO14443::ATQA_answer[1]);
 }
 
 auto RFIDKit::receiveReadTagData() -> bool
 {
 	lstd::span<uint8_t> span = {_tag_data};
-	_rfid_reader.receiveDataFromTag(&span);
+	_rfid_reader.receiveDataFromTag(span);
 
-	// printf("Data read : ");
-	// for (size_t i = 0; i < span.size(); ++i) {
-	// 	_tag.data[i] = span.data()[i];
-	// 	printf("%i ", _tag.data[i]);
-	// }
-	// printf("\n");
+	for (size_t i = 0; i < span.size(); ++i) {
+		_tag.data[i] = span.data()[i];
+	}
 
 	std::array<uint8_t, 2> received_crc = {span[16], span[17]};
 

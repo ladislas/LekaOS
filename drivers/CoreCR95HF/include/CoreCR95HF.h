@@ -8,6 +8,9 @@
 #include <cstdint>
 #include <lstd_span>
 
+#include "events/EventQueue.h"
+#include "rtos/Thread.h"
+
 #include "interface/drivers/BufferedSerial.h"
 #include "interface/drivers/RFID.h"
 
@@ -19,7 +22,10 @@ namespace rfid::cr95hf {
 		const uint8_t id;
 		const std::byte gain;
 		const std::byte modulation;
-		constexpr auto gain_modulation_values() const -> uint8_t { return std::to_integer<uint8_t>(gain | modulation); }
+		[[nodiscard]] constexpr auto gain_modulation_values() const -> uint8_t
+		{
+			return std::to_integer<uint8_t>(gain | modulation);
+		}
 	};
 
 	constexpr size_t max_tx_length = 16;
@@ -57,6 +63,15 @@ namespace rfid::cr95hf {
 		constexpr size_t flag_size	  = 3;
 
 	}	// namespace tag_answer
+
+	namespace expected_answer_size {
+
+		constexpr size_t idn						= 17;
+		constexpr size_t tag_detection				= 3;
+		constexpr size_t set_baudrate				= 1;
+		constexpr size_t set_communication_protocol = 2;
+
+	}	// namespace expected_answer_size
 
 	namespace protocol {
 
@@ -153,27 +168,29 @@ namespace rfid::cr95hf {
 class CoreCR95HF : public interface::RFID
 {
   public:
-	explicit CoreCR95HF(interface::BufferedSerial &serial) : _serial(serial) {};
+	explicit CoreCR95HF(interface::BufferedSerial &serial, rtos::Thread &thread, events::EventQueue &event_queue)
+		: _serial(serial), _thread(thread), _event_queue(event_queue) {};
 
-	void init() final { registerCallback(); }
+	void init() final;
 
 	void registerTagAvailableCallback(tagAvailableCallback callback) final { _tagAvailableCallback = callback; };
-	void onTagAvailable() final;
+	void onDataAvailable() final;
 
-	auto getIDN() -> std::array<uint8_t, 17> final;
+	auto getIDN() -> std::array<uint8_t, rfid::cr95hf::expected_answer_size::idn> final;
 	auto setBaudrate(uint8_t baudrate) -> bool final;
 
 	auto setCommunicationProtocol(rfid::Protocol protocol) -> bool final;
 
 	void sendCommandToTag(lstd::span<uint8_t> cmd) final;
-	auto receiveDataFromTag(lstd::span<uint8_t> *data) -> size_t final;
+	auto receiveDataFromTag(lstd::span<uint8_t> data) -> bool final;
 
-	void setModeTagDetection();
+	void setModeTagDetection() final;
 
-	std::array<uint8_t, rfid::cr95hf::max_rx_length> _rx_buf {};
+	auto checkForTagDetection() -> bool final;
 
   private:
 	void registerCallback();
+	void onCallback();
 
 	auto receiveTagDetectionCallback() -> bool;
 
@@ -196,11 +213,17 @@ class CoreCR95HF : public interface::RFID
 	void copyTagDataToSpan(lstd::span<uint8_t> data);
 
 	tagAvailableCallback _tagAvailableCallback;
+	bool _tagWasDetected {false};
 
 	interface::BufferedSerial &_serial;
+	rtos::Thread &_thread;
+	events::EventQueue &_event_queue;
 
 	size_t _anwser_size {0};
 	std::array<uint8_t, rfid::cr95hf::max_tx_length> _tx_buf {};
+	std::array<uint8_t, rfid::cr95hf::max_rx_length> _rx_buf {};
+
+	rfid::Tag _tag {};
 };
 
 }	// namespace leka

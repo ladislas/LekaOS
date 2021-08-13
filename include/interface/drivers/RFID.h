@@ -56,7 +56,7 @@ namespace interface {
 		virtual void init() = 0;
 
 		virtual void registerTagAvailableCallback(tagAvailableCallback callback) = 0;
-		virtual void onTagAvailable()											 = 0;
+		virtual void onDataAvailable()											 = 0;
 
 		virtual auto getIDN() -> std::array<uint8_t, 17>   = 0;
 		virtual auto setBaudrate(uint8_t baudrate) -> bool = 0;
@@ -65,7 +65,11 @@ namespace interface {
 
 		virtual void sendCommandToTag(lstd::span<uint8_t> cmd) = 0;
 
-		virtual auto receiveDataFromTag(lstd::span<uint8_t> *data) -> size_t = 0;
+		virtual auto receiveDataFromTag(lstd::span<uint8_t> data) -> bool = 0;
+
+		virtual void setModeTagDetection() = 0;
+
+		virtual auto checkForTagDetection() -> bool = 0;
 
 		std::array<uint8_t, 32> _rx_buf {};
 

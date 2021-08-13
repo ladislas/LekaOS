@@ -12,6 +12,17 @@
 
 namespace leka {
 
+enum class state : uint8_t
+{
+
+	SENSOR_WAKE_UP				   = 0x00,
+	TAG_COMMUNICATION_PROTOCOL_SET = 0x01,
+	WAIT_FOR_ATQA_RESPONSE		   = 0x02,
+	TAG_IDENTIFIED				   = 0x03,
+	TAG_ACTIVATED				   = 0x04,
+
+};
+
 class RFIDKit : public interface::RFID::ISO14443
 {
   public:
@@ -52,6 +63,7 @@ class RFIDKit : public interface::RFID::ISO14443
 
 	interface::RFID &_rfid_reader;
 	rfid::Tag _tag {};
+	state _state = state::SENSOR_WAKE_UP;
 };
 
 }	// namespace leka
