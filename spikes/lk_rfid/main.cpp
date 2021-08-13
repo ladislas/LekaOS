@@ -83,11 +83,6 @@ using namespace std::chrono;
 EventQueue eventQueue;
 Thread thread;
 
-static auto mbed_serial = mbed::BufferedSerial(RFID_UART_TX, RFID_UART_RX, 57600);
-static auto rfid_serial = CoreBufferedSerial(mbed_serial);
-static auto rfid_reader = CoreCR95HF(rfid_serial, thread, eventQueue);
-static auto core_rfid	= RFIDKit(rfid_reader);
-
 template <size_t size>
 void printArrayAsChar(std::array<uint8_t, size> array)
 {
@@ -121,11 +116,6 @@ void printArrayAsUint(std::array<uint8_t, size> array)
 
 auto main() -> int
 {
-	rtos::Thread thread1;
-	rtos::Thread thread2;
-
-	thread2.start(mbed::callback(&eventQueue, &EventQueue::dispatch_forever));
-
 	static auto log_serial = mbed::BufferedSerial(USBTX, USBRX, 115200);
 	leka::logger::set_print_function([](const char *str, size_t size) { log_serial.write(str, size); });
 
@@ -134,6 +124,11 @@ auto main() -> int
 	log_info("Hello, World!\n\n");
 
 	rtos::ThisThread::sleep_for(2s);
+
+	auto mbed_serial = mbed::BufferedSerial(RFID_UART_TX, RFID_UART_RX, 57600);
+	auto rfid_serial = CoreBufferedSerial(mbed_serial);
+	auto rfid_reader = CoreCR95HF(rfid_serial, thread, eventQueue);
+	auto core_rfid	 = RFIDKit(rfid_reader);
 
 	core_rfid.init();
 
