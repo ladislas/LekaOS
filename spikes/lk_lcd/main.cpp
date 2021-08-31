@@ -58,24 +58,26 @@ auto main() -> int
 	coresdram.initialize();
 
 	screen.initialize();
-	screen.setFrameRateLimit(15);
+	screen.setFrameRateLimit(30);
 
-	gfx::Image image1("/fs/assets/images/Leka/logo.jpg");
-	gfx::Image image2("/fs/assets/images/Leka/image.jpg");
+	gfx::Image image1("/fs/images/leka-logo.jpg");
+	// gfx::Image image2("/fs/assets/images/Leka/image.jpg");
 
 	screen.draw(image1);
 	screen.display();
 	rtos::ThisThread::sleep_for(2s);
 
-	screen.draw(image2);
-	screen.display();
-	rtos::ThisThread::sleep_for(2s);
+	// screen.draw(image2);
+	// screen.display();
+	// rtos::ThisThread::sleep_for(2s);
 
-	gfx::Video video_joie("/fs/assets/video/joie_15fps_10.avi");
-	gfx::Video video_perplex("/fs/assets/video/perplex_15fps_10.avi");
-	gfx::Video video_birds("/fs/assets/video/BirdsAndFeeder_15fps_10.avi");
+	// gfx::Video video_joie("/fs/assets/video/JoieV4_low.avi");
+	gfx::Video video_joie("/fs/videos/animation-idle.avi");
 
-	std::array<gfx::Video *, 3> videos = {&video_joie, &video_perplex, &video_birds};
+	// gfx::Video video_birds("/fs/assets/video/BirdsAndFeeder.avi");
+
+	// std::array<gfx::Video *, 3> videos = {&video_joie, &video_perplex, &video_birds};
+	std::array<gfx::Video *, 1> videos = {&video_joie};
 
 	gfx::Rectangle progress_bar_bg(0, 460, 800, 20, {190, 250, 230});
 	gfx::Rectangle progress_bar(0, 460, 0, 20, {20, 240, 165});
@@ -85,21 +87,23 @@ auto main() -> int
 	while (true) {
 		for (auto *video_ptr: videos) {
 			auto &video = *video_ptr;
+			screen.resetCounters();
 			video.restart();
 			while (!video.hasEnded()) {
 				screen.draw(video);
 
 				video.nextFrame();
-				progress_bar.width = video.getProgress() * lcd::dimension.width;
+				// progress_bar.width = video.getProgress() * lcd::dimension.width;
 
-				screen.draw(progress_bar_bg);
-				screen.draw(progress_bar);
+				// screen.draw(progress_bar_bg);
+				// screen.draw(progress_bar);
 
-				formatTime(buff, video.getTime());
-				screen.drawText(buff, 20, 460, {250, 60, 150});
+				// formatTime(buff, video.getTime());
+				// screen.drawText(buff, 20, 460, {250, 60, 150});
 
 				screen.display();
 			}
+			screen.displayCounters();
 		}
 	}
 }

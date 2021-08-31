@@ -269,20 +269,22 @@ void CoreLCDDriverOTM8009A::setLandscapeOrientation()
 
 	auto settings = []() constexpr
 	{
-		// settings |= std::byte {1 << 7};	  // Set vertical symmetry - needed
-		// settings |= std::byte {1 << 5};	  // Set landscape mode - needed
+		// settings |= std::byte {1 << 5};	// Set landscape mode - needed
+		// settings |= std::byte {1 << 6};	// Set horizontal symmetry - needed
+		// settings |= std::byte {1 << 4};	// Set reverse refresh top to bottom - needed
 
-		// settings |= std::byte {1 << 6};	// Set horizontal symmetry - not needed
-		// settings |= std::byte {1 << 4};	// Set reverse refresh top to bottom - not needed
+		// settings |= std::byte {1 << 7};	// Set vertical symmetry - not needed
 		// settings |= std::byte {1 << 3};	// Set use BGR (Blue Green Red) - not needed
 
 		std::byte _settings {0x00};
 
-		auto set_vertical_symmetry = [&]() constexpr { _settings |= std::byte {1 << 7}; };
-		auto set_landscape_mode	   = [&]() constexpr { _settings |= std::byte {1 << 5}; };
+		auto set_landscape_mode		 = [&]() constexpr { _settings |= std::byte {1 << 5}; };
+		auto set_horizontal_symmetry = [&]() constexpr { _settings |= std::byte {1 << 6}; };
+		auto set_reverse_refresh	 = [&]() constexpr { _settings |= std::byte {1 << 4}; };
 
-		set_vertical_symmetry();
 		set_landscape_mode();
+		set_horizontal_symmetry();
+		set_reverse_refresh();
 
 		return std::to_integer<uint8_t>(_settings);
 	};
