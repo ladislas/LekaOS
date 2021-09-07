@@ -10,10 +10,9 @@
 #include <memory>
 
 #include "LKCoreFatFsBase.h"
+#include "LKCoreJPEGMode.h"
 #include "LKCoreSTM32HalBase.h"
 #include "external/st_jpeg_utils.h"
-// #include "interface/DMA2D.hpp"
-#include "LKCoreJPEGMode.h"
 #include "interface/JPEG.hpp"
 
 namespace leka {
@@ -25,7 +24,6 @@ class CoreJPEG : public interface::JPEGBase
 
 	void initialize() final;
 
-	auto getHandle() -> JPEG_HandleTypeDef & final;
 	auto getConfig() -> JPEG_ConfTypeDef final;
 
 	void registerCallbacks() final;
@@ -39,8 +37,6 @@ class CoreJPEG : public interface::JPEGBase
 	LKCoreSTM32HalBase &_hal;
 
 	std::unique_ptr<LKCoreJPEGMode> _mode;
-
-	JPEG_HandleTypeDef _hjpeg;
 };
 
 }	// namespace leka

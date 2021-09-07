@@ -5,18 +5,17 @@
 #ifndef _LEKA_OS_DRIVER_CORE_VIDEO_INTERFACE_DMA2D_BASE_H_
 #define _LEKA_OS_DRIVER_CORE_VIDEO_INTERFACE_DMA2D_BASE_H_
 
-#include "LKCoreSTM32HalBase.h"
+#include "LKComponentHandler.h"
+#include "stm32f7xx_hal.h"
 
 namespace leka::interface {
 
-class DMA2DBase
+class DMA2DBase : public LKComponentHandler<DMA2D_HandleTypeDef>
 {
   public:
 	virtual ~DMA2DBase() = default;
 
 	virtual void initialize() = 0;
-
-	virtual auto getHandle() -> DMA2D_HandleTypeDef & = 0;
 
 	virtual void setFrameBufferAddress(uintptr_t address) = 0;
 

@@ -10,7 +10,7 @@ using namespace leka;
 
 CoreJPEG::CoreJPEG(LKCoreSTM32HalBase &hal, std::unique_ptr<LKCoreJPEGMode> mode) : _hal(hal), _mode(std::move(mode))
 {
-	_hjpeg.Instance = JPEG;
+	_handle.Instance = JPEG;
 }
 
 void CoreJPEG::initialize()
@@ -19,7 +19,7 @@ void CoreJPEG::initialize()
 
 	JPEG_InitColorTables();
 	_hal.HAL_RCC_JPEG_CLK_ENABLE();
-	_hal.HAL_JPEG_Init(&_hjpeg);
+	_hal.HAL_JPEG_Init(&_handle);
 
 	// need to be called again because JPEG_Init resets the callbacks
 	registerCallbacks();
@@ -32,14 +32,9 @@ void CoreJPEG::initialize()
 auto CoreJPEG::getConfig() -> JPEG_ConfTypeDef
 {
 	JPEG_ConfTypeDef config;
-	_hal.HAL_JPEG_GetInfo(&_hjpeg, &config);
+	_hal.HAL_JPEG_GetInfo(&_handle, &config);
 
 	return config;
-}
-
-auto CoreJPEG::getHandle() -> JPEG_HandleTypeDef &
-{
-	return _hjpeg;
 }
 
 void CoreJPEG::registerCallbacks()
@@ -70,7 +65,7 @@ void CoreJPEG::registerCallbacks()
 
 auto CoreJPEG::decodeImage(LKCoreFatFsBase &file) -> std::uint32_t
 {
-	return _mode->decodeImage(&_hjpeg, file.getPointer());
+	return _mode->decodeImage(&_handle, file.getPointer());
 }
 
 auto CoreJPEG::getWidthOffset(JPEG_ConfTypeDef &config) -> uint32_t

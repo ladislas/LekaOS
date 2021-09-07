@@ -28,8 +28,6 @@ class CoreDSI : public interface::DSIBase
 
 	void enableTearingEffectReporting() final;
 
-	[[nodiscard]] auto getHandle() -> DSI_HandleTypeDef & final;
-
 	auto isBusy() -> bool final;
 
 	void write(const uint8_t *data, uint32_t size) final;
@@ -38,7 +36,6 @@ class CoreDSI : public interface::DSIBase
 	LKCoreSTM32HalBase &_hal;
 	interface::LTDCBase &_ltdc;
 
-	DSI_HandleTypeDef _hdsi;
 	DSI_CmdCfgTypeDef _cmdconf;
 	DSI_LPCmdTypeDef _lpcmd;
 

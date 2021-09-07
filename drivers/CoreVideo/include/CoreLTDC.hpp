@@ -17,13 +17,10 @@ class CoreLTDC : public interface::LTDCBase
 
 	void initialize() final;
 
-	[[nodiscard]] auto getHandle() -> LTDC_HandleTypeDef & final;
-
   private:
 	LKCoreSTM32HalBase &_hal;
 
-	LTDC_HandleTypeDef _hltdc {};
-	LTDC_LayerCfgTypeDef _layerConfig {};
+	LTDC_LayerCfgTypeDef _layerConfig;
 
 	void configurePeriphClock();
 };
