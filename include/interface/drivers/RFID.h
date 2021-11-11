@@ -104,6 +104,8 @@ namespace interface {
 			Command<1> command_requestA		   = {.data = {0x26}, .flags = leka::rfid::Flag::sb_7};
 			Command<2> command_read_register_0 = {.data	 = {0x30, 0x00},
 												  .flags = leka::rfid::Flag::crc | leka::rfid::Flag::sb_8};
+			Command<2> command_read_register_4 = {.data	 = {0x30, 0x04},
+												  .flags = leka::rfid::Flag::crc | leka::rfid::Flag::sb_8};
 			Command<2> command_read_register_6 = {.data	 = {0x30, 0x06},
 												  .flags = leka::rfid::Flag::crc | leka::rfid::Flag::sb_8};
 

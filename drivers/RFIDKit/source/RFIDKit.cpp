@@ -99,7 +99,7 @@ void RFIDKit::sendReadRegister6()
 {
 	std::array<uint8_t, 3> array {};
 
-	commandToArray(command_read_register_6, array);
+	commandToArray(command_read_register_4, array);
 
 	_rfid_reader.sendCommandToTag(array);
 }
