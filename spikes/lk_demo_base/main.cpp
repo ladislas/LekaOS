@@ -12,6 +12,7 @@
 #include "Flags.h"
 #include "HelloWorld.h"
 #include "LogKit.h"
+#include "RFIDUtils.h"
 #include "WatchdogUtils.h"
 
 using namespace leka;
@@ -24,6 +25,15 @@ auto event_flags_external_interaction = rtos::EventFlags {};
 auto hello = HelloWorld {};
 
 auto battery_utils = BatteryUtils {};
+
+auto rfid_utils = RFIDUtils {event_flags_external_interaction};
+
+void useRFID()
+{
+	event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+	log_info("Data: %x", rfid_utils.getTag());
+	rtos::ThisThread::sleep_for(100ms);
+}
 
 auto main() -> int
 {
@@ -41,6 +51,9 @@ auto main() -> int
 
 	battery_utils.registerEventQueue(event_queue);
 
+	rfid_utils.initialize();
+	rfid_utils.registerEventQueue(event_queue);
+
 	rtos::ThisThread::sleep_for(1s);
 
 	while (true) {
@@ -49,5 +62,7 @@ auto main() -> int
 				 int(t.count() / 1000));
 
 		rtos::ThisThread::sleep_for(1s);
+
+		useRFID();
 	}
 }
