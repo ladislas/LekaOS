@@ -7,6 +7,7 @@
 
 #include "HelloWorld.h"
 #include "LogKit.h"
+#include "WatchdogUtils.h"
 
 using namespace leka;
 using namespace std::chrono_literals;
@@ -15,6 +16,8 @@ auto hello = HelloWorld {};
 
 auto main() -> int
 {
+	startWatchdog();
+
 	static auto serial = mbed::BufferedSerial(USBTX, USBRX, 115200);
 	leka::logger::set_print_function([](const char *str, size_t size) { serial.write(str, size); });
 
