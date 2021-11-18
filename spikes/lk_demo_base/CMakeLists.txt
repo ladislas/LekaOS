@@ -13,6 +13,7 @@ target_sources(spike_lk_demo_base
 	PRIVATE
 		main.cpp
 		BLEUtils.cpp
+		LedsUtils.cpp
 		RFIDUtils.cpp
 		DisplayUtils.cpp
 		BatteryUtils.cpp
@@ -25,6 +26,7 @@ target_link_libraries(spike_lk_demo_base
 	LKCoreSTM32Hal
 	CoreBattery
 	BLEKit
+	driver_FastLED
 	CoreVideo
 	VideoKit
 	CoreCR95HF

@@ -16,6 +16,7 @@
 #include "DisplayUtils.h"
 #include "Flags.h"
 #include "HelloWorld.h"
+#include "LedsUtils.h"
 #include "LogKit.h"
 #include "RFIDUtils.h"
 #include "WatchdogUtils.h"
@@ -34,6 +35,8 @@ auto battery_utils = BatteryUtils {};
 auto ble_utils	= BLEUtils {event_flags_external_interaction};
 auto ble_thread = rtos::Thread {};
 
+auto leds_utils = LedsUtils {};
+
 SDBlockDevice sd_blockdevice(SD_SPI_MOSI, SD_SPI_MISO, SD_SPI_SCK);
 FATFileSystem fatfs("fs");
 
@@ -45,6 +48,17 @@ auto video_thread  = rtos::Thread {};
 auto display_utils = DisplayUtils {video_thread, event_flags_external_interaction, hal, coresdram, display};
 
 auto rfid_utils = RFIDUtils {event_flags_external_interaction};
+
+void useLeds()
+{
+	leds_utils.setBrightness(0x08);
+
+	// leds_utils.runMotivationFire();
+	leds_utils.turnOnAll(0xFF0000);
+	leds_utils.turnOffEars();
+	leds_utils.runRainbowColor();
+	leds_utils.turnOffAll();
+}
 
 void useDisplay()
 {
@@ -83,6 +97,10 @@ auto main() -> int
 	ble_utils.setDeviceName("Leka_DemoBase");
 	ble_thread.start({&ble_utils, &BLEUtils::startAdvertising});
 
+	leds_utils.initialize();
+	rtos::ThisThread::sleep_for(100ms);
+	leds_utils.initializationAnimation();
+
 	display_utils.initializeSD();
 	display_utils.initializeScreen();
 
@@ -98,6 +116,7 @@ auto main() -> int
 
 		rtos::ThisThread::sleep_for(1s);
 
+		useLeds();
 		useDisplay();
 		useRFID();
 	}
