@@ -8,6 +8,7 @@
 #include "rtos/ThisThread.h"
 #include "rtos/Thread.h"
 
+#include "BatteryUtils.h"
 #include "Flags.h"
 #include "HelloWorld.h"
 #include "LogKit.h"
@@ -22,6 +23,8 @@ auto event_flags_external_interaction = rtos::EventFlags {};
 
 auto hello = HelloWorld {};
 
+auto battery_utils = BatteryUtils {};
+
 auto main() -> int
 {
 	startWatchdog();
@@ -35,6 +38,8 @@ auto main() -> int
 
 	log_info("Hello, World!\n\n");
 	hello.start();
+
+	battery_utils.registerEventQueue(event_queue);
 
 	rtos::ThisThread::sleep_for(1s);
 
