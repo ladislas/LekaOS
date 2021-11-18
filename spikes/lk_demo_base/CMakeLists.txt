@@ -12,6 +12,7 @@ target_include_directories(spike_lk_demo_base
 target_sources(spike_lk_demo_base
 	PRIVATE
 		main.cpp
+		BLEUtils.cpp
 		RFIDUtils.cpp
 		BatteryUtils.cpp
 		WatchdogUtils.cpp
@@ -20,6 +21,7 @@ target_sources(spike_lk_demo_base
 target_link_libraries(spike_lk_demo_base
 	CoreBufferedSerial
 	CoreBattery
+	BLEKit
 	CoreCR95HF
 	RFIDKit
 )

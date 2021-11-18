@@ -8,6 +8,8 @@
 #include "rtos/ThisThread.h"
 #include "rtos/Thread.h"
 
+#include "BLEUtils.h"
+
 #include "BatteryUtils.h"
 #include "Flags.h"
 #include "HelloWorld.h"
@@ -25,6 +27,9 @@ auto event_flags_external_interaction = rtos::EventFlags {};
 auto hello = HelloWorld {};
 
 auto battery_utils = BatteryUtils {};
+
+auto ble_utils	= BLEUtils {event_flags_external_interaction};
+auto ble_thread = rtos::Thread {};
 
 auto rfid_utils = RFIDUtils {event_flags_external_interaction};
 
@@ -50,6 +55,9 @@ auto main() -> int
 	hello.start();
 
 	battery_utils.registerEventQueue(event_queue);
+
+	ble_utils.setDeviceName("Leka_DemoBase");
+	ble_thread.start({&ble_utils, &BLEUtils::startAdvertising});
 
 	rfid_utils.initialize();
 	rfid_utils.registerEventQueue(event_queue);
