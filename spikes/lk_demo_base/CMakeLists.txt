@@ -14,14 +14,19 @@ target_sources(spike_lk_demo_base
 		main.cpp
 		BLEUtils.cpp
 		RFIDUtils.cpp
+		DisplayUtils.cpp
 		BatteryUtils.cpp
 		WatchdogUtils.cpp
 )
 
 target_link_libraries(spike_lk_demo_base
 	CoreBufferedSerial
+	FileSystemKit
+	LKCoreSTM32Hal
 	CoreBattery
 	BLEKit
+	CoreVideo
+	VideoKit
 	CoreCR95HF
 	RFIDKit
 )

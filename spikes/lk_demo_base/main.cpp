@@ -11,6 +11,7 @@
 #include "BLEUtils.h"
 
 #include "BatteryUtils.h"
+#include "DisplayUtils.h"
 #include "Flags.h"
 #include "HelloWorld.h"
 #include "LogKit.h"
@@ -31,7 +32,25 @@ auto battery_utils = BatteryUtils {};
 auto ble_utils	= BLEUtils {event_flags_external_interaction};
 auto ble_thread = rtos::Thread {};
 
+auto hal	   = LKCoreSTM32Hal {};
+auto coresdram = CoreSDRAM {hal};
+auto display   = VideoKit {hal};
+VideoKit_DeclareIRQHandlers(display);
+auto video_thread  = rtos::Thread {};
+auto display_utils = DisplayUtils {video_thread, event_flags_external_interaction, hal, coresdram, display};
+
 auto rfid_utils = RFIDUtils {event_flags_external_interaction};
+
+void useDisplay()
+{
+	display_utils.setOn();
+
+	display_utils.displayImage(0);
+	rtos::ThisThread::sleep_for(5s);
+
+	display_utils.displayVideo("animation-idle");
+	rtos::ThisThread::sleep_for(10s);
+}
 
 void useRFID()
 {
@@ -59,6 +78,9 @@ auto main() -> int
 	ble_utils.setDeviceName("Leka_DemoBase");
 	ble_thread.start({&ble_utils, &BLEUtils::startAdvertising});
 
+	display_utils.initializeSD();
+	display_utils.initializeScreen();
+
 	rfid_utils.initialize();
 	rfid_utils.registerEventQueue(event_queue);
 
@@ -71,6 +93,7 @@ auto main() -> int
 
 		rtos::ThisThread::sleep_for(1s);
 
+		useDisplay();
 		useRFID();
 	}
 }
