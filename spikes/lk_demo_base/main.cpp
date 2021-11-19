@@ -78,6 +78,49 @@ void useRFID()
 	rtos::ThisThread::sleep_for(100ms);
 }
 
+void demoFour()
+{
+	display_utils.displayImage("emotion-happy");
+	display_utils.setBrightness(1.F);
+
+	leds_utils.setBrightness(0x80);
+	auto new_color	   = CRGB {};
+	uint8_t color_step = 0x08;
+
+	while (true) {
+		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+
+		auto tag_value = rfid_utils.getTag();
+		if (tag_value == Tag::number_0_zero) {
+			return;
+		}
+		switch (tag_value) {
+			case Tag::color_red:
+				new_color = leds_utils.offsetColor(color_step, 0, 0);
+				break;
+			case Tag::color_green:
+				new_color = leds_utils.offsetColor(0, color_step, 0);
+				break;
+			case Tag::color_blue:
+				new_color = leds_utils.offsetColor(0, 0, color_step);
+				break;
+			case Tag::color_yellow:
+				new_color = leds_utils.offsetColor(color_step, color_step, 0);
+				break;
+			case Tag::color_white:
+				new_color = leds_utils.offsetColor(color_step, color_step, color_step);
+				break;
+			case Tag::color_black:
+				new_color = leds_utils.offsetColor(-color_step, -color_step, -color_step);
+				break;
+			default:
+				rtos::ThisThread::sleep_for(10ms);
+		}
+		leds_utils.turnOnAll(new_color);
+		rtos::ThisThread::sleep_for(50ms);
+	}
+}
+
 auto main() -> int
 {
 	startWatchdog();
@@ -123,6 +166,9 @@ auto main() -> int
 		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
 		auto tag_value = rfid_utils.getTag();
 		switch (tag_value) {
+			case Tag::number_4_four:
+				demoFour();
+				break;
 			default:
 				break;
 		}
