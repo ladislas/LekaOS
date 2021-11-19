@@ -78,6 +78,21 @@ void useRFID()
 	rtos::ThisThread::sleep_for(100ms);
 }
 
+void demoTwo()
+{
+	display_utils.displayImage(0);
+	display_utils.setBrightness(1.F);
+
+	while (true) {
+		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+		display_utils.displayImage(static_cast<uint8_t>(rfid_utils.getTag()));
+
+		if (rfid_utils.getTag() == Tag::number_0_zero) {
+			return;
+		}
+	}
+}
+
 void demoThree()
 {
 	auto start = rtos::Kernel::Clock::now();
@@ -229,6 +244,9 @@ auto main() -> int
 		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
 		auto tag_value = rfid_utils.getTag();
 		switch (tag_value) {
+			case Tag::number_2_two:
+				demoTwo();
+				break;
 			case Tag::number_3_three:
 				demoThree();
 				break;
