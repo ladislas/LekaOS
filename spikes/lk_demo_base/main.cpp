@@ -78,6 +78,68 @@ void useRFID()
 	rtos::ThisThread::sleep_for(100ms);
 }
 
+void demoOne()
+{
+	auto start = rtos::Kernel::Clock::now();
+
+	display_utils.displayImage(0);
+	display_utils.setBrightness(1.F);
+	auto expected_tag_color = Tag::color_black;
+
+	auto random_color  = 0;
+	auto random_family = 0;
+
+	while (true) {
+		random_color  = int((rtos::Kernel::Clock::now() - start).count()) % 6;
+		random_family = int((rtos::Kernel::Clock::now() - start).count()) % 4;
+
+		switch (random_color) {
+			case 0:
+				display_utils.displayImage(object_colored_family_table.at(random_family) + "-red");
+				expected_tag_color = Tag::color_red;
+				break;
+			case 1:
+				display_utils.displayImage(object_colored_family_table.at(random_family) + "-blue");
+				expected_tag_color = Tag::color_blue;
+				break;
+			case 2:
+				display_utils.displayImage(object_colored_family_table.at(random_family) + "-green");
+				expected_tag_color = Tag::color_green;
+				break;
+			case 3:
+				display_utils.displayImage(object_colored_family_table.at(random_family) + "-yellow");
+				expected_tag_color = Tag::color_yellow;
+				break;
+			case 4:
+				display_utils.displayImage(object_colored_family_table.at(random_family) + "-black");
+				expected_tag_color = Tag::color_black;
+				break;
+			case 5:
+				display_utils.displayImage(object_colored_family_table.at(random_family) + "-white");
+				expected_tag_color = Tag::color_white;
+				break;
+			default:
+				break;
+		}
+
+		do {
+			event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+		} while ((rfid_utils.getTag() != expected_tag_color) && (rfid_utils.getTag() != Tag::number_0_zero));
+
+		if (rfid_utils.getTag() == Tag::number_0_zero) {
+			return;
+		}
+
+		display_utils.displayVideo("animation-joy");
+		leds_utils.runRainbowColor();
+		rtos::ThisThread::sleep_for(2s);
+
+		leds_utils.turnOffAll();
+		display_utils.setBrightness(0.F);
+		rtos::ThisThread::sleep_for(1s);
+	}
+}
+
 void demoTwo()
 {
 	display_utils.displayImage(0);
@@ -244,6 +306,9 @@ auto main() -> int
 		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
 		auto tag_value = rfid_utils.getTag();
 		switch (tag_value) {
+			case Tag::number_1_one:
+				demoOne();
+				break;
 			case Tag::number_2_two:
 				demoTwo();
 				break;
