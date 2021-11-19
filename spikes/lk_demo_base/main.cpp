@@ -78,6 +78,69 @@ void useRFID()
 	rtos::ThisThread::sleep_for(100ms);
 }
 
+void demoThree()
+{
+	auto start = rtos::Kernel::Clock::now();
+
+	leds_utils.setBrightness(0x40);
+	auto expected_tag_emotion_child = Tag::emotion_happiness_child;
+	auto expected_tag_emotion_leka	= Tag::emotion_happiness_leka;
+
+	auto random_value {0};
+
+	while (true) {
+		random_value = int((rtos::Kernel::Clock::now() - start).count()) % (emotion_table.size() - 1);
+		display_utils.displayImage(emotion_table.at(random_value));
+		rtos::ThisThread::sleep_for(100ms);
+		display_utils.setBrightness(1.F);
+
+		switch (random_value) {
+			case 0:
+				expected_tag_emotion_child = Tag::emotion_happiness_child;
+				expected_tag_emotion_leka  = Tag::emotion_happiness_leka;
+				break;
+			case 1:
+				expected_tag_emotion_child = Tag::emotion_anger_child;
+				expected_tag_emotion_leka  = Tag::emotion_anger_leka;
+				break;
+			case 2:
+				expected_tag_emotion_child = Tag::emotion_fear_child;
+				expected_tag_emotion_leka  = Tag::emotion_fear_leka;
+				break;
+			case 3:
+				expected_tag_emotion_child = Tag::emotion_disgust_child;
+				expected_tag_emotion_leka  = Tag::emotion_disgust_leka;
+				break;
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				expected_tag_emotion_child = Tag::emotion_sadness_child;
+				expected_tag_emotion_leka  = Tag::emotion_sadness_leka;
+				break;
+			default:
+				break;
+		}
+
+		do {
+			event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+		} while ((rfid_utils.getTag() != expected_tag_emotion_child) &&
+				 (rfid_utils.getTag() != expected_tag_emotion_leka) && (rfid_utils.getTag() != Tag::number_0_zero));
+
+		if (rfid_utils.getTag() == Tag::number_0_zero) {
+			return;
+		}
+
+		display_utils.displayVideo("animation-joy");
+		leds_utils.runRainbowColor();
+		rtos::ThisThread::sleep_for(2s);
+
+		leds_utils.turnOffAll();
+		display_utils.setBrightness(0.F);
+		rtos::ThisThread::sleep_for(1s);
+	}
+}
+
 void demoFour()
 {
 	display_utils.displayImage("emotion-happy");
@@ -166,6 +229,9 @@ auto main() -> int
 		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
 		auto tag_value = rfid_utils.getTag();
 		switch (tag_value) {
+			case Tag::number_3_three:
+				demoThree();
+				break;
 			case Tag::number_4_four:
 				demoFour();
 				break;
