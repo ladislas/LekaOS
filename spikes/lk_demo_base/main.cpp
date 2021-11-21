@@ -116,8 +116,15 @@ auto main() -> int
 
 		rtos::ThisThread::sleep_for(1s);
 
-		useLeds();
-		useDisplay();
-		useRFID();
+		// useLeds();
+		// useDisplay();
+		// useRFID();
+
+		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+		auto tag_value = rfid_utils.getTag();
+		switch (tag_value) {
+			default:
+				break;
+		}
 	}
 }
