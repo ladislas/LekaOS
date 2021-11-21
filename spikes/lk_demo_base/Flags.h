@@ -6,5 +6,6 @@
 #define _LEKA_OS_FLAGS_H_
 
 constexpr uint32_t NEW_RFID_TAG_FLAG(1UL << 0);
+constexpr uint32_t NEW_BLE_MESSAGE_FLAG(1UL << 1);
 
 #endif	 // _LEKA_OS_FLAGS_H_

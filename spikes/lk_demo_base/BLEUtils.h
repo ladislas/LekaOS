@@ -10,6 +10,7 @@
 
 #include "BLEGap.h"
 #include "BLEGattServer.h"
+#include "BLEServiceMonitoring.h"
 
 namespace leka {
 
@@ -17,9 +18,15 @@ class BLEUtils
 {
   public:
 	explicit BLEUtils(rtos::EventFlags &event_flags)
-		: _event_flags(event_flags), _ble {BLE::Instance()}, _ble_gap {_ble, _event_queue}, _ble_server(_ble) {};
+		: _event_flags(event_flags),
+		  _ble {BLE::Instance()},
+		  _ble_gap {_ble, _event_queue},
+		  _ble_server(_ble),
+		  _ble_service_monitoring(_event_flags) {};
 
 	void setDeviceName(lstd::span<const char> name);
+
+	auto getMonitoringData() -> uint8_t;
 
 	void startAdvertising();
 
@@ -30,6 +37,8 @@ class BLEUtils
 	BLE &_ble;
 	BLEGap _ble_gap;
 	BLEGattServer _ble_server;
+
+	BLEServiceMonitoring _ble_service_monitoring;
 };
 
 }	// namespace leka
