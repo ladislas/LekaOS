@@ -5,12 +5,15 @@
 using namespace leka;
 using namespace std::chrono_literals;
 
+SDBlockDevice sd_blockdevice(SD_SPI_MOSI, SD_SPI_MISO, SD_SPI_SCK);
+FATFileSystem fatfs("fs");
+
 void DisplayUtils::initializeSD()
 {
-	_sd_blockdevice.init();
-	_sd_blockdevice.frequency(25'000'000);
+	sd_blockdevice.init();
+	sd_blockdevice.frequency(25'000'000);
 
-	_fatfs.mount(&_sd_blockdevice);
+	fatfs.mount(&sd_blockdevice);
 }
 
 void DisplayUtils::initializeScreen()

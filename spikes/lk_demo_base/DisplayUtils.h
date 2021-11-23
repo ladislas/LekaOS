@@ -114,8 +114,8 @@ class DisplayUtils
 	rtos::Thread &_video_thread;
 	rtos::EventFlags &_event_flags;
 
-	SDBlockDevice _sd_blockdevice {SD_SPI_MOSI, SD_SPI_MISO, SD_SPI_SCK};
-	FATFileSystem _fatfs {"fs"};
+	// SDBlockDevice _sd_blockdevice {SD_SPI_MOSI, SD_SPI_MISO, SD_SPI_SCK};
+	// FATFileSystem _fatfs {"fs"};
 	float _brightness_on_default {1.F};
 
 	LKCoreSTM32Hal &_hal;

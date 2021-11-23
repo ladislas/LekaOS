@@ -4,6 +4,7 @@
 
 #include "drivers/BufferedSerial.h"
 #include "events/EventQueue.h"
+#include "platform/Callback.h"
 #include "rtos/EventFlags.h"
 #include "rtos/ThisThread.h"
 #include "rtos/Thread.h"
@@ -11,6 +12,7 @@
 #include "BLEUtils.h"
 
 #include "BatteryUtils.h"
+#include "CoreSDRAM.hpp"
 #include "DisplayUtils.h"
 #include "Flags.h"
 #include "HelloWorld.h"
@@ -32,9 +34,12 @@ auto battery_utils = BatteryUtils {};
 auto ble_utils	= BLEUtils {event_flags_external_interaction};
 auto ble_thread = rtos::Thread {};
 
-auto hal	   = LKCoreSTM32Hal {};
-auto coresdram = CoreSDRAM {hal};
-auto display   = VideoKit {hal};
+SDBlockDevice sd_blockdevice(SD_SPI_MOSI, SD_SPI_MISO, SD_SPI_SCK);
+FATFileSystem fatfs("fs");
+
+LKCoreSTM32Hal hal;
+CoreSDRAM coresdram(hal);
+VideoKit display(hal);
 VideoKit_DeclareIRQHandlers(display);
 auto video_thread  = rtos::Thread {};
 auto display_utils = DisplayUtils {video_thread, event_flags_external_interaction, hal, coresdram, display};
