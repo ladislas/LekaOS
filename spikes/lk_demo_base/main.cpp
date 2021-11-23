@@ -329,6 +329,19 @@ auto main() -> int
 		// useDisplay();
 		// useRFID();
 
+		if ((event_flags_external_interaction.get() & NEW_LCD_INTENSITY_FLAG) == NEW_LCD_INTENSITY_FLAG) {
+			auto new_value = (float(ble_utils.getLCDIntensity()) / 255.F);
+			display_utils.setBrightness(new_value);
+			log_info("BRITGHTNESS SET %.2f", new_value);
+		}
+		if ((event_flags_external_interaction.get() & NEW_LEDS_INTENSITY_FLAG) == NEW_LEDS_INTENSITY_FLAG) {
+			auto new_value = ble_utils.getMonitoringData();
+			leds_utils.setBrightness(new_value);
+			log_info("BRITGHTNESS SET %x", new_value);
+		}
+
+		display_utils.setOff();
+		leds_utils.turnOffAll();
 		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
 		auto tag_value = rfid_utils.getTag();
 		switch (tag_value) {

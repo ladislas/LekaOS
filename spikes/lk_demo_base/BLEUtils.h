@@ -26,6 +26,7 @@ class BLEUtils
 
 	void setDeviceName(lstd::span<const char> name);
 
+	auto getLCDIntensity() -> uint8_t;
 	auto getMonitoringData() -> uint8_t;
 
 	void startAdvertising();
