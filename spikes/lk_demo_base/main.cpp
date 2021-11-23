@@ -49,6 +49,21 @@ auto display_utils = DisplayUtils {video_thread, event_flags_external_interactio
 
 auto rfid_utils = RFIDUtils {event_flags_external_interaction};
 
+void deepSleepClock()
+{
+	while (true) {
+		if (event_flags_external_interaction.get() != KICK_SLEEP_FLAG) {
+			leds_utils.turnOffAll();
+			display_utils.setOff();
+			event_flags_external_interaction.set(STOP_VIDEO_FLAG);
+
+			event_flags_external_interaction.wait_any(KICK_SLEEP_FLAG);
+		}
+		event_flags_external_interaction.clear(KICK_SLEEP_FLAG);
+		rtos::ThisThread::sleep_for(5min);
+	}
+}
+
 void useLeds()
 {
 	leds_utils.setBrightness(0x08);
@@ -121,9 +136,12 @@ void demoOne()
 			default:
 				break;
 		}
+		display_utils.setBrightness(1.F);
 
 		do {
 			event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+			event_flags_external_interaction.set(KICK_SLEEP_FLAG);
+			display_utils.setBrightness(1.F);
 		} while ((rfid_utils.getTag() != expected_tag_color) && (rfid_utils.getTag() != Tag::number_0_zero));
 
 		if (rfid_utils.getTag() == Tag::number_0_zero) {
@@ -147,6 +165,8 @@ void demoTwo()
 
 	while (true) {
 		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+		event_flags_external_interaction.set(KICK_SLEEP_FLAG);
+		display_utils.setBrightness(1.F);
 		display_utils.displayImage(static_cast<uint8_t>(rfid_utils.getTag()));
 
 		if (rfid_utils.getTag() == Tag::number_0_zero) {
@@ -201,6 +221,8 @@ void demoThree()
 
 		do {
 			event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+			event_flags_external_interaction.set(KICK_SLEEP_FLAG);
+			display_utils.setBrightness(1.F);
 		} while ((rfid_utils.getTag() != expected_tag_emotion_child) &&
 				 (rfid_utils.getTag() != expected_tag_emotion_leka) && (rfid_utils.getTag() != Tag::number_0_zero));
 
@@ -229,6 +251,7 @@ void demoFour()
 
 	while (true) {
 		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+		event_flags_external_interaction.set(KICK_SLEEP_FLAG);
 
 		auto tag_value = rfid_utils.getTag();
 		if (tag_value == Tag::number_0_zero) {
@@ -274,6 +297,9 @@ auto main() -> int
 
 	log_info("Hello, World!\n\n");
 	hello.start();
+
+	rtos::Thread thread_deep_sleep;
+	thread_deep_sleep.start(deepSleepClock);
 
 	battery_utils.registerEventQueue(event_queue);
 
