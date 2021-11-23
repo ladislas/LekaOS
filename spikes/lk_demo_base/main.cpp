@@ -11,6 +11,7 @@
 
 #include "BLEUtils.h"
 
+#include "Activities.h"
 #include "BatteryUtils.h"
 #include "CoreSDRAM.hpp"
 #include "DisplayUtils.h"
@@ -93,197 +94,6 @@ void useRFID()
 	rtos::ThisThread::sleep_for(100ms);
 }
 
-void demoOne()
-{
-	auto start = rtos::Kernel::Clock::now();
-
-	display_utils.displayImage(0);
-	display_utils.setBrightness(1.F);
-	auto expected_tag_color = Tag::color_black;
-
-	auto random_color  = 0;
-	auto random_family = 0;
-
-	while (true) {
-		random_color  = int((rtos::Kernel::Clock::now() - start).count()) % 6;
-		random_family = int((rtos::Kernel::Clock::now() - start).count()) % 4;
-
-		switch (random_color) {
-			case 0:
-				display_utils.displayImage(object_colored_family_table.at(random_family) + "-red");
-				expected_tag_color = Tag::color_red;
-				break;
-			case 1:
-				display_utils.displayImage(object_colored_family_table.at(random_family) + "-blue");
-				expected_tag_color = Tag::color_blue;
-				break;
-			case 2:
-				display_utils.displayImage(object_colored_family_table.at(random_family) + "-green");
-				expected_tag_color = Tag::color_green;
-				break;
-			case 3:
-				display_utils.displayImage(object_colored_family_table.at(random_family) + "-yellow");
-				expected_tag_color = Tag::color_yellow;
-				break;
-			case 4:
-				display_utils.displayImage(object_colored_family_table.at(random_family) + "-black");
-				expected_tag_color = Tag::color_black;
-				break;
-			case 5:
-				display_utils.displayImage(object_colored_family_table.at(random_family) + "-white");
-				expected_tag_color = Tag::color_white;
-				break;
-			default:
-				break;
-		}
-		display_utils.setBrightness(1.F);
-
-		do {
-			event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
-			event_flags_external_interaction.set(KICK_SLEEP_FLAG);
-			display_utils.setBrightness(1.F);
-		} while ((rfid_utils.getTag() != expected_tag_color) && (rfid_utils.getTag() != Tag::number_0_zero));
-
-		if (rfid_utils.getTag() == Tag::number_0_zero) {
-			return;
-		}
-
-		display_utils.displayVideo("animation-joy");
-		leds_utils.runRainbowColor();
-		rtos::ThisThread::sleep_for(2s);
-
-		leds_utils.turnOffAll();
-		display_utils.setBrightness(0.F);
-		rtos::ThisThread::sleep_for(1s);
-	}
-}
-
-void demoTwo()
-{
-	display_utils.displayImage(0);
-	display_utils.setBrightness(1.F);
-
-	while (true) {
-		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
-		event_flags_external_interaction.set(KICK_SLEEP_FLAG);
-		display_utils.setBrightness(1.F);
-		display_utils.displayImage(static_cast<uint8_t>(rfid_utils.getTag()));
-
-		if (rfid_utils.getTag() == Tag::number_0_zero) {
-			return;
-		}
-	}
-}
-
-void demoThree()
-{
-	auto start = rtos::Kernel::Clock::now();
-
-	leds_utils.setBrightness(0x40);
-	auto expected_tag_emotion_child = Tag::emotion_happiness_child;
-	auto expected_tag_emotion_leka	= Tag::emotion_happiness_leka;
-
-	auto random_value {0};
-
-	while (true) {
-		random_value = int((rtos::Kernel::Clock::now() - start).count()) % (emotion_table.size() - 1);
-		display_utils.displayImage(emotion_table.at(random_value));
-		rtos::ThisThread::sleep_for(100ms);
-		display_utils.setBrightness(1.F);
-
-		switch (random_value) {
-			case 0:
-				expected_tag_emotion_child = Tag::emotion_happiness_child;
-				expected_tag_emotion_leka  = Tag::emotion_happiness_leka;
-				break;
-			case 1:
-				expected_tag_emotion_child = Tag::emotion_anger_child;
-				expected_tag_emotion_leka  = Tag::emotion_anger_leka;
-				break;
-			case 2:
-				expected_tag_emotion_child = Tag::emotion_fear_child;
-				expected_tag_emotion_leka  = Tag::emotion_fear_leka;
-				break;
-			case 3:
-				expected_tag_emotion_child = Tag::emotion_disgust_child;
-				expected_tag_emotion_leka  = Tag::emotion_disgust_leka;
-				break;
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-				expected_tag_emotion_child = Tag::emotion_sadness_child;
-				expected_tag_emotion_leka  = Tag::emotion_sadness_leka;
-				break;
-			default:
-				break;
-		}
-
-		do {
-			event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
-			event_flags_external_interaction.set(KICK_SLEEP_FLAG);
-			display_utils.setBrightness(1.F);
-		} while ((rfid_utils.getTag() != expected_tag_emotion_child) &&
-				 (rfid_utils.getTag() != expected_tag_emotion_leka) && (rfid_utils.getTag() != Tag::number_0_zero));
-
-		if (rfid_utils.getTag() == Tag::number_0_zero) {
-			return;
-		}
-
-		display_utils.displayVideo("animation-joy");
-		leds_utils.runRainbowColor();
-		rtos::ThisThread::sleep_for(2s);
-
-		leds_utils.turnOffAll();
-		display_utils.setBrightness(0.F);
-		rtos::ThisThread::sleep_for(1s);
-	}
-}
-
-void demoFour()
-{
-	display_utils.displayImage("emotion-happy");
-	display_utils.setBrightness(1.F);
-
-	leds_utils.setBrightness(0x80);
-	auto new_color	   = CRGB {};
-	uint8_t color_step = 0x08;
-
-	while (true) {
-		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
-		event_flags_external_interaction.set(KICK_SLEEP_FLAG);
-
-		auto tag_value = rfid_utils.getTag();
-		if (tag_value == Tag::number_0_zero) {
-			return;
-		}
-		switch (tag_value) {
-			case Tag::color_red:
-				new_color = leds_utils.offsetColor(color_step, 0, 0);
-				break;
-			case Tag::color_green:
-				new_color = leds_utils.offsetColor(0, color_step, 0);
-				break;
-			case Tag::color_blue:
-				new_color = leds_utils.offsetColor(0, 0, color_step);
-				break;
-			case Tag::color_yellow:
-				new_color = leds_utils.offsetColor(color_step, color_step, 0);
-				break;
-			case Tag::color_white:
-				new_color = leds_utils.offsetColor(color_step, color_step, color_step);
-				break;
-			case Tag::color_black:
-				new_color = leds_utils.offsetColor(-color_step, -color_step, -color_step);
-				break;
-			default:
-				rtos::ThisThread::sleep_for(10ms);
-		}
-		leds_utils.turnOnAll(new_color);
-		rtos::ThisThread::sleep_for(50ms);
-	}
-}
-
 auto main() -> int
 {
 	startWatchdog();
@@ -346,16 +156,19 @@ auto main() -> int
 		auto tag_value = rfid_utils.getTag();
 		switch (tag_value) {
 			case Tag::number_1_one:
-				demoOne();
+				displayTags(event_flags_external_interaction, display_utils, leds_utils, rfid_utils);
 				break;
 			case Tag::number_2_two:
-				demoTwo();
+				activityRecognitionEmotions(event_flags_external_interaction, display_utils, leds_utils, rfid_utils);
 				break;
 			case Tag::number_3_three:
-				demoThree();
+				activityRecognitionColor(event_flags_external_interaction, display_utils, leds_utils, rfid_utils);
 				break;
 			case Tag::number_4_four:
-				demoFour();
+				activityColorLeka2(event_flags_external_interaction, display_utils, leds_utils, rfid_utils);
+				break;
+			case Tag::number_5_five:
+				activityColorLeka3(event_flags_external_interaction, display_utils, leds_utils, rfid_utils);
 				break;
 			default:
 				break;
