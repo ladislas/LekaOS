@@ -15,11 +15,14 @@
 #include "BatteryUtils.h"
 #include "CoreSDRAM.hpp"
 #include "DisplayUtils.h"
+#include "FATFileSystem.h"
 #include "Flags.h"
 #include "HelloWorld.h"
+#include "LKCoreFatFs.h"
 #include "LedsUtils.h"
 #include "LogKit.h"
 #include "RFIDUtils.h"
+#include "SDBlockDevice.h"
 #include "WatchdogUtils.h"
 
 using namespace leka;
@@ -63,6 +66,14 @@ void deepSleepClock()
 		event_flags_external_interaction.clear(KICK_SLEEP_FLAG);
 		rtos::ThisThread::sleep_for(5min);
 	}
+}
+
+void initializeSD()
+{
+	sd_blockdevice.init();
+	sd_blockdevice.frequency(25'000'000);
+
+	fatfs.mount(&sd_blockdevice);
 }
 
 void useLeds()
@@ -120,7 +131,7 @@ auto main() -> int
 	rtos::ThisThread::sleep_for(100ms);
 	leds_utils.initializationAnimation();
 
-	display_utils.initializeSD();
+	initializeSD();
 	display_utils.initializeScreen();
 
 	rfid_utils.initialize();

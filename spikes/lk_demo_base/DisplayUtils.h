@@ -94,7 +94,6 @@ class DisplayUtils
 						  CoreSDRAM &sdram, VideoKit &display)
 		: _video_thread(video_thread), _event_flags(event_flags), _hal(hal), _coresdram(sdram), _display(display) {};
 
-	void initializeSD();
 	void initializeScreen();
 
 	void setOn();
@@ -114,8 +113,6 @@ class DisplayUtils
 	rtos::Thread &_video_thread;
 	rtos::EventFlags &_event_flags;
 
-	// SDBlockDevice _sd_blockdevice {SD_SPI_MOSI, SD_SPI_MISO, SD_SPI_SCK};
-	// FATFileSystem _fatfs {"fs"};
 	float _brightness_on_default {1.F};
 
 	LKCoreSTM32Hal &_hal;
