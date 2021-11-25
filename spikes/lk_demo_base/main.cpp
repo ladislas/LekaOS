@@ -181,6 +181,9 @@ auto main() -> int
 			case Tag::number_5_five:
 				activityColorLeka3(event_flags_external_interaction, display_utils, leds_utils, rfid_utils);
 				break;
+			case Tag::number_6_six:
+				rainbowAndJoy(event_flags_external_interaction, display_utils, leds_utils, rfid_utils);
+				break;
 			default:
 				break;
 		}

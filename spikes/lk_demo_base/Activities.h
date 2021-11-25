@@ -28,6 +28,9 @@ void activityColorLeka2(rtos::EventFlags &event_flags_external_interaction, Disp
 void activityColorLeka3(rtos::EventFlags &event_flags_external_interaction, DisplayUtils &display_utils,
 						LedsUtils &leds_utils, RFIDUtils &rfid_utils);
 
+void rainbowAndJoy(rtos::EventFlags &event_flags_external_interaction, DisplayUtils &display_utils,
+				   LedsUtils &leds_utils, RFIDUtils &rfid_utils);
+
 }	// namespace leka
 
 #endif	 // _LEKA_OS_ACTIVITIES_H_

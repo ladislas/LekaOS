@@ -252,3 +252,20 @@ void leka::activityColorLeka3(rtos::EventFlags &event_flags_external_interaction
 		rtos::ThisThread::sleep_for(50ms);
 	}
 }
+
+void leka::rainbowAndJoy(rtos::EventFlags &event_flags_external_interaction, DisplayUtils &display_utils,
+						 LedsUtils &leds_utils, RFIDUtils &rfid_utils)
+{
+	display_utils.displayVideo("animation-joy");
+
+	while (true) {
+		event_flags_external_interaction.set(KICK_SLEEP_FLAG);
+
+		auto tag_value = rfid_utils.getTag();
+		if (tag_value == Tag::number_0_zero) {
+			return;
+		}
+
+		leds_utils.runRainbowColorStopLess();
+	}
+}

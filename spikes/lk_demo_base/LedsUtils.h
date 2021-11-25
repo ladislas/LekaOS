@@ -32,6 +32,7 @@ class LedsUtils
 	void fillFromPaletteColors(uint8_t index_palette);
 
 	void runMotivationFire();
+	void runRainbowColorStopLess(int repetition = 1);
 	void runRainbowColor();
 
   private:

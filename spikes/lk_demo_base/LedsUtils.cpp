@@ -169,18 +169,25 @@ void LedsUtils::runMotivationFire()
 
 void LedsUtils::runRainbowColor()
 {
+	runRainbowColorStopLess();
+	turnOffAll();
+}
+
+void LedsUtils::runRainbowColorStopLess(int repetition)
+{
 	setBrightness(_brightness);
 	_palette = RainbowColors_p;
 
-	int start_index_palette = 0;
+	for (int rep = 0; rep < repetition; rep++) {
+		int start_index_palette = 0;
 
-	while (start_index_palette < 400) {
-		start_index_palette++;
+		while (start_index_palette < 400) {
+			start_index_palette++;
 
-		fillFromPaletteColors(start_index_palette);
+			fillFromPaletteColors(start_index_palette);
 
-		FastLED.show();
-		rtos::ThisThread::sleep_for(10ms);
+			FastLED.show();
+			rtos::ThisThread::sleep_for(10ms);
+		}
 	}
-	turnOffAll();
 }
