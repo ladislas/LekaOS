@@ -32,6 +32,8 @@ void DisplayUtils::setBrightness(float value)
 {
 	if (value != 0.F) {
 		_brightness_on_default = value;
+	} else {
+		_event_flags.set(STOP_VIDEO_FLAG);
 	}
 	_display.setBrightness(value);
 }
