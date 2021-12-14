@@ -30,9 +30,7 @@ class BLEUtils
 
 	void setBatteryLevel(float value);
 
-	auto getPing() -> bool;
 	auto getRebootInstruction() -> bool;
-	auto getLedsIntensity() -> uint8_t;
 	auto getLCDIntensity() -> uint8_t;
 
 	void startAdvertising();

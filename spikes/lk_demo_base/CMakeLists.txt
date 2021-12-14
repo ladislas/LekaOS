@@ -13,10 +13,7 @@ target_sources(spike_lk_demo_base
 	PRIVATE
 		main.cpp
 		BLEUtils.cpp
-		LedsUtils.cpp
 		RFIDUtils.cpp
-		Activities.cpp
-		MotorsUtils.cpp
 		DisplayUtils.cpp
 		BatteryUtils.cpp
 		WatchdogUtils.cpp
@@ -27,9 +24,6 @@ target_link_libraries(spike_lk_demo_base
 	FileSystemKit
 	LKCoreSTM32Hal
 	CoreBattery
-	driver_FastLED
-	CorePwm
-	CoreMotor
 	BLEKit
 	CoreVideo
 	VideoKit

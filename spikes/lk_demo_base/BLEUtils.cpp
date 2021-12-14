@@ -12,19 +12,9 @@ void BLEUtils::setBatteryLevel(float value)
 	_ble_service_battery.setBatteryLevel(static_cast<uint8_t>(value * 100));
 }
 
-auto BLEUtils::getPing() -> bool
-{
-	return _ble_service_monitoring.getPing();
-}
-
 auto BLEUtils::getRebootInstruction() -> bool
 {
 	return _ble_service_monitoring.getRebootInstruction();
-}
-
-auto BLEUtils::getLedsIntensity() -> uint8_t
-{
-	return _ble_service_monitoring.getLedsIntenisty();
 }
 
 auto BLEUtils::getLCDIntensity() -> uint8_t
