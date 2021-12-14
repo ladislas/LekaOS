@@ -32,6 +32,7 @@ class BLEUtils
 
 	auto getRebootInstruction() -> bool;
 	auto getLCDIntensity() -> uint8_t;
+	auto getVideoSelection() -> uint8_t;
 
 	void startAdvertising();
 

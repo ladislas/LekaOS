@@ -99,6 +99,7 @@ void DisplayUtils::runVideo()
 
 	while (true) {
 		_event_flags.wait_any(START_VIDEO_FLAG);
+		_event_flags.set(KICK_TURN_OFF_FLAG);
 
 		gfx::Video video(_full_path_video.data());
 

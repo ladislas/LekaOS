@@ -10,10 +10,12 @@
 
 #include "BLEUtils.h"
 
+#include "Assets.h"
 #include "BatteryUtils.h"
 #include "DisplayUtils.h"
 #include "Flags.h"
 #include "HelloWorld.h"
+#include "LedsUtils.h"
 #include "LogKit.h"
 #include "RFIDUtils.h"
 #include "WatchdogUtils.h"
@@ -34,6 +36,8 @@ auto event_flags_external_interaction = rtos::EventFlags {};
 auto hello = HelloWorld {};
 
 auto battery_utils = BatteryUtils {};
+
+auto leds_utils = LedsUtils {};
 
 auto ble_utils = BLEUtils {event_flags_external_interaction};
 
@@ -117,12 +121,14 @@ auto main() -> int
 	log_info("Hello, World!\n\n");
 	hello.start();
 
-	battery_utils.registerEventQueue(event_queue);
+	leds_utils.initialize();
+
+	// battery_utils.registerEventQueue(event_queue);
 
 	event_flags_external_interaction.set(KICK_TURN_OFF_FLAG);
 	thread_deep_sleep.start(deepSleepLoop);
 
-	ble_utils.setDeviceName("LekaDemo");
+	ble_utils.setDeviceName("LekaVideo");
 	thread_ble.start({&ble_utils, &BLEUtils::startAdvertising});
 	thread_ble_notifications.start(updateBLENotifications);
 
@@ -131,8 +137,25 @@ auto main() -> int
 
 	rfid_utils.initialize();
 	rfid_utils.registerEventQueue(event_queue);
+	auto convertToRealNumber = [](Tag tag_number) {
+		return static_cast<int>(tag_number) - static_cast<int>(Tag::number_0_zero);
+	};
+	auto tag_id = Tag::None;
+
+	leds_utils.initializationAnimation();
+	leds_utils.setBrightness(0xFF);
 
 	event_flags_external_interaction.set(KICK_TURN_OFF_FLAG);
+
+	display_utils.displayImage("demo-main-menu");
+	uint8_t video_id = 0xFF;
+
+	auto new_rfid_tag_flag_is_set = [&]() {
+		return (event_flags_external_interaction.get() & NEW_RFID_TAG_FLAG) == NEW_RFID_TAG_FLAG;
+	};
+	auto video_selection_flag_is_set = [&]() {
+		return (event_flags_external_interaction.get() & BLE_VIDEO_SELECTION_FLAG) == BLE_VIDEO_SELECTION_FLAG;
+	};
 
 	while (true) {
 		auto t = rtos::Kernel::Clock::now() - start;
@@ -141,48 +164,34 @@ auto main() -> int
 
 		rtos::ThisThread::sleep_for(1s);
 
-		// useLeds();
-		// useDisplay();
-		// useRFID();
-
-		display_utils.displayImage("demo-main-menu");
-
-		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG);
+		leds_utils.turnOff(LedsRange::all);
+		event_flags_external_interaction.wait_any(NEW_RFID_TAG_FLAG | BLE_VIDEO_SELECTION_FLAG, osWaitForever, false);
 		event_flags_external_interaction.set(KICK_TURN_OFF_FLAG);
-		auto tag_value = rfid_utils.getTag();
-		switch (tag_value) {
-			case Tag::number_1_one:
-				// Video
-				break;
-			case Tag::number_2_two:
-				// Video
-				break;
-			case Tag::number_3_three:
-				// Video
-				break;
-			case Tag::number_4_four:
-				// Video
-				break;
-			case Tag::number_5_five:
-				// Video
-				break;
-			case Tag::number_6_six:
-				// Video
-				break;
-			case Tag::number_7_seven:
-				// Video
-				break;
-			case Tag::number_8_eight:
-				// Video
-				break;
-			case Tag::number_9_nine:
-				// Video
-				break;
-			case Tag::number_10_ten:
-				// Video
-				break;
-			default:
-				break;
+		leds_utils.turnOn(LedsRange::all, CRGB::RoyalBlue);
+
+		if (new_rfid_tag_flag_is_set()) {
+			tag_id	 = rfid_utils.getTag();
+			video_id = convertToRealNumber(tag_id);
+			event_flags_external_interaction.clear(NEW_RFID_TAG_FLAG);
+		} else if (video_selection_flag_is_set()) {
+			video_id = ble_utils.getVideoSelection();
+			event_flags_external_interaction.clear(BLE_VIDEO_SELECTION_FLAG);
+		}
+
+		if (video_id > 0x00 && video_id <= video_table.size()) {
+			display_utils.displayVideo(video_table.at(video_id - 1));
+		} else if (tag_id == Tag::emotion_happiness_leka) {
+			display_utils.displayVideo("animation-face-state-happy");
+		} else if (tag_id == Tag::emotion_sadness_leka) {
+			display_utils.displayVideo("animation-face-state-sad");
+		} else if (tag_id == Tag::emotion_anger_leka) {
+			display_utils.displayVideo("animation-face-state-angry");
+		} else if (tag_id == Tag::emotion_fear_leka) {
+			display_utils.displayVideo("animation-face-state-affraid");
+		} else if (tag_id == Tag::emotion_disgust_leka) {
+			display_utils.displayVideo("animation-face-state-disgusted");
+		} else {
+			display_utils.displayImage("demo-main-menu");
 		}
 	}
 }

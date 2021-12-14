@@ -22,6 +22,11 @@ auto BLEUtils::getLCDIntensity() -> uint8_t
 	return _ble_service_monitoring.getLCDIntensity();
 }
 
+auto BLEUtils::getVideoSelection() -> uint8_t
+{
+	return _ble_service_monitoring.getVideoSelection();
+}
+
 void BLEUtils::startAdvertising()
 {
 	std::array<interface::BLEService *, 2> services = {&_ble_service_battery, &_ble_service_monitoring};
