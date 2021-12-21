@@ -190,6 +190,14 @@ auto main() -> int
 			display_utils.displayVideo("animation-face-state-affraid");
 		} else if (tag_id == Tag::emotion_disgust_leka) {
 			display_utils.displayVideo("animation-face-state-disgusted");
+		} else if (tag_id == Tag::emotion_happiness_child) {
+			display_utils.displayVideo("2021_12_21-animation-face-state-happy");
+		} else if (tag_id == Tag::emotion_sadness_child) {
+			display_utils.displayVideo("2021_12_21-animation-face-state-sad-without-eyebrows");
+		} else if (tag_id == Tag::emotion_anger_child) {
+			display_utils.displayVideo("2021_12_21-animation-face-state-angry");
+		} else if (tag_id == Tag::emotion_disgust_child) {
+			display_utils.displayVideo("2021_12_21-animation-face-state-disgusted");
 		} else {
 			display_utils.displayImage("demo-main-menu");
 		}
