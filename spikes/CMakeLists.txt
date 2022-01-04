@@ -28,6 +28,8 @@ add_subdirectory(${SPIKES_DIR}/lk_update_process_app_update)
 
 add_subdirectory(${SPIKES_DIR}/stl_cxxsupport)
 
+add_subdirectory(${SPIKES_DIR}/boost_sml_simple)
+
 add_custom_target(spikes_leka)
 add_dependencies( spikes_leka
 	spike_lk_ble
