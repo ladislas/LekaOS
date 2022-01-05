@@ -1,6 +1,6 @@
 #include "WebKit.h"
 
-#include "Certificates.h"
+#include "CertificateStore.h"
 #include "FileSystemKit.h"
 
 using namespace leka;
