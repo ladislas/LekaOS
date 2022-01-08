@@ -1,7 +1,7 @@
 #!/bin/bash
 
-mkdir _tmp > /dev/null 2> /dev/null
-mkdir _release > /dev/null 2> /dev/null
+mkdir -p _tmp
+mkdir -p _release
 
 # Variables
 RECOMPILE_BOOTLOADER="false"
